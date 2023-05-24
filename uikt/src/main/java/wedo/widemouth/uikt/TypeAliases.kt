@@ -8,7 +8,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
-import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.ScrollView
@@ -21,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import wedo.widemouth.uikt.decoration.ConstraintLayoutExt
 import wedo.widemouth.uikt.decoration.FrameLayoutExt
+import wedo.widemouth.uikt.decoration.ImageViewExt
 import wedo.widemouth.uikt.decoration.LinearLayoutExt
 import wedo.widemouth.uikt.decoration.RelativeLayoutExt
 
@@ -35,7 +35,7 @@ typealias _ScrollColumn = ScrollView
 typealias _NestedScrollColumn = NestedScrollView
 
 typealias _Text = TextView
-typealias _Image = ImageView
+typealias _Image = ImageViewExt
 typealias _Button = Button
 typealias _EditText = EditText
 typealias _ProgressBar = ProgressBar

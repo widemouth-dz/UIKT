@@ -2,10 +2,9 @@
 
 ## About
 
-UIkt is a `DSL` for Android UI, which can create UIs with simple and readable Kotlin code.
+UIkt 是关于 Android UI 的`DSL`，它可以使用简单易读的 Kotlin 代码创建 UI。
 
-Here's a brief introduction, [UIKT-vs-others](UIKT-vs-others.md) , to the related projects if you don't know much about `Android UI DSL` yet, 
-then choose one of them based on compatibility and your preferences.
+这里有一个简短的介绍，[UIKT-vs-others](UIKT-vs-others.md)，如果你对`Android UI DSL`还不太了解，那么根据兼容性和你的喜好选择其中一个。
 
 ## Requirement
 
@@ -19,7 +18,7 @@ then choose one of them based on compatibility and your preferences.
 
 ### Plugins
 
-Here are Kotlin upgrade recommendations, [Gradle | Kotlin Doc](https://kotlinlang.org/docs/gradle-configure-project.html).
+以下是 Kotlin 升级建议， [Gradle | Kotlin Doc](https://kotlinlang.org/docs/gradle-configure-project.html).
 
 | Kotlin  | KGP     | Gradle |  AGP   |
 |:-------:|---------|:------:|:------:|
@@ -27,7 +26,7 @@ Here are Kotlin upgrade recommendations, [Gradle | Kotlin Doc](https://kotlinlan
 
 ## Configuration
 
-Configure the following `kotlinOptions` to enable `context` API.
+配置以下`kotlinOptions`以启用`context`API。
 
 ```
 kotlinOptions {
@@ -36,7 +35,7 @@ kotlinOptions {
 ```
 
 ## Sample
-See [Sample](./Sample.md) for details.
+请参阅 [Sample](./Sample.md) 了解详情.
 ```
 Column {
 
@@ -62,6 +61,6 @@ Column {
 ```
 ## Others about `UIKT`
 
-- [Arch Doc](./Arch.md): Implementation details.
-- [Sample Doc](./Arch.md): Detail use cases.
-- [UIKT-vs-others](./UIKT-vs-others.md): Compare UIKT to other related projects.
+- [Arch Doc](./Arch.md): 实现细节。
+- [Sample Doc](./Arch.md): 详细用例。
+- [UIKT-vs-others](./UIKT-vs-others.md): UIKT 与其他相关项目的比较。

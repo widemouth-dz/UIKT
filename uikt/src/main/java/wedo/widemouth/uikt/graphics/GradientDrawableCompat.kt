@@ -123,13 +123,13 @@ fun GradientDrawable(
     strokeColor: Int? = null,
     strokeColors: ColorStateList? = null,
     strokeWidth: Int = 0,
-    sizeW: Int = -1,
-    sizeH: Int = -1
+    width: Int = -1,
+    height: Int = -1
 ): GradientDrawableCompat {
     val isValidRadius =
         leftTopRadius > 0 || rightTopRadius > 0 || leftBottomRadius > 0 || rightBottomRadius > 0
     return GradientDrawableCompat().apply {
-        setSize(sizeW, sizeH)
+        setSize(width, height)
         this.radiusAdjustBounds = radiusAdjustBounds
         this.alpha = (0xFF * alpha).toInt()
         if (color != null) setColor(color)
