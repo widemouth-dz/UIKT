@@ -1,8 +1,8 @@
-# UIKt
+# UIKT
 
 ## About
 
-UIkt is a `DSL` for Android UI, which can create UIs with simple and readable Kotlin code.
+UIKT is a `DSL` for Android UI, which can create UIs with simple and readable Kotlin code.
 
 Here's a brief introduction, [UIKT-vs-others](UIKT-vs-others.md) , to the related projects if you don't know much about `Android UI DSL` yet, 
 then choose one of them based on compatibility and your preferences.
@@ -63,5 +63,5 @@ Column {
 ## Others about `UIKT`
 
 - [Arch Doc](./Arch.md): Implementation details.
-- [Sample Doc](./Arch.md): Detail use cases.
-- [UIKT-vs-others](./UIKT-vs-others.md): Compare UIKT to other related projects.
+- [Sample Doc](./Sample.md): Detail use cases.
+- [UIKT-vs-others](./UIKT-vs-others-ch.md): Compare UIKT to other related projects.

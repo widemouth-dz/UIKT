@@ -3,10 +3,10 @@
 ## [Context receivers](https://github.com/Kotlin/KEEP/blob/context-receivers/proposals/context-receivers.md)
 
 UIKT使用`context receivers`来构建布局DSL，这是一个**实验性**API。
-视图布局块中至少有两个接收器，其布局和自身。但是`extension function`只支持一个接收器，我尝试了很多可能的方法来解决它。
+视图布局块中至少有两个 receiver，其布局和自身。但是`extension function`只支持一个 receiver，我尝试了很多可能的方法来解决它。
 以下是尝试列表：
 
-* 多个 `receivers`, 多个 `extension functions`, 就像这样:
+* 多个 `receiver`, 多个 `extension function`, 就像这样:
 
   ```
   lambda:  view.() -> Unit, layout.() -> Unit
@@ -14,7 +14,7 @@ UIKT使用`context receivers`来构建布局DSL，这是一个**实验性**API�
   dsl:     view{ }, layout{ }
   ```
 
-  [Anko-Layouts](https://github.com/Kotlin/anko/wiki/Anko-Layouts) 遵循它，一个view带有两个block，如下所示：
+  [Anko-Layouts](https://github.com/Kotlin/anko/wiki/Anko-Layouts) 遵循它，一个 view 带有两个 block，如下所示：
   
   ```
   view{
@@ -40,9 +40,9 @@ UIKT使用`context receivers`来构建布局DSL，这是一个**实验性**API�
          layout.*** =
       }
   ```
-它们都能够满足构建布局树的要求，但有一点瑕疵。如果它适用于多个`receivers`，这将是最佳实践。
+它们都能够满足构建布局树的要求，但有一点瑕疵。如果它适用于多个`receiver`，这将是最佳实践。
 
-At first, I went looking for some ideas on lambda, here is an attempt:
+起初，我去找了一些关于 lambda 的想法，这是一个尝试：
 
 ```
 lambda: view.() -> layout.() -> Unit
@@ -54,38 +54,29 @@ dsl:    view{
           }
 ```
 
-Now, the inner `block` has got two implicit receivers.
-After that, I found a experimental weak keyword `context` about multiple receivers.
+现在，内部`block`有两个隐式 receiver。之后，我发现了一个关于多个 receiver 的实验性弱关键字`context`。
 
-In my opinion, no difference from the nested lambda, due to its experimental nature,
-there are some things incompatible with some other features, here they are:
+在我看来，与嵌套 `lambda` 没有区别，由于其实验性质，有些东西与其他一些功能不兼容，它们是： 
+- lambda 块必须是 `noinline`。
+- 当有两个以上的 receiver 时，不能与`typealias`一起使用。
 
-- The lambda block must be `noinline`.
-- Cannot be used with `typealias` when there are more than two receivers.
-
-Some links for details:
+一些详细信息链接：
 
 - [KEEP-259](https://github.com/Kotlin/KEEP/blob/context-receivers/proposals/context-receivers.md#detailed-design)
 - [KT-51234](https://youtrack.jetbrains.com/issue/KT-51234/Context-receivers-can-be-duplicated-in-function-declaration)
 - [KT-54233](https://youtrack.jetbrains.com/issue/KT-54233/Lambda-context-receiver-definitions-can-no-longer-accept-multiple-reified-generic-context-parameters)
 
-Then, a function with three receivers have to be defined as a verbose lambda, and all these are left
-without inline feature.
-Anyway, we already have got multiple receivers.
+然后，必须将具有三个 receiver 的函数类型定义为冗余的 `lambda`，并且所有这些都没有内联功能。无论如何，我们已经有多个 receiver 。
+
 
 ## [DslMarker]
-
-Another important note is the [DslMarker], we have to consider the implicit receivers not only from
-the outer blocks,
-but also the multiple receivers in current block, a block with context receivers be required that
-its internal implicit receivers can access but not the external, so the internal implicit are bound
-with
-different [markers][DslMarker]. see [ViewMarker], [LayoutMarker], [ScopeMarker].
+另一个重要的注意事项是 [DslMarker]，我们不仅要考虑来自外部块的隐式 receiver ，还要考虑当前块中的多个 receiver ，
+一个带有上下文 receiver 的块要求可以访问其内部隐式 receiver ，但不能访问外部，因此内部隐式 receiver 绑定不同的 [markers][DslMarker]。
+see [ViewMarker], [LayoutMarker], [ScopeMarker].
 
 ## Partial applied function
 
-Constructing a layout requires at least two parameters (see code#1 below), [context][Context] and
-tree block, at least for the layout root.
+构造布局至少需要两个参数（请参阅下面的代码 1）、[context][Context] 和树`block`，至少对于布局根而言。
 
 ```
 Root(context, block)         // 1
@@ -93,7 +84,7 @@ Root(context, block)         // 1
 PartialRoot(block)(context)  // 2
 ```
 
-I want to construct it with `code#2` above, and [Root] works just like it.
+我想用上面的`code2`构建它，[Root] 就是这样工作的。
 
 `PartialRoot` function:
 ```
