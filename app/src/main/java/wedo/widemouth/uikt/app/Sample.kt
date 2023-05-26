@@ -1,4 +1,4 @@
-package wedo.widemouth.uikt
+package wedo.widemouth.uikt.app
 
 import android.content.Context
 import android.graphics.Color
@@ -7,6 +7,14 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.constraintlayout.solver.widgets.Flow
+import wedo.widemouth.uikt.Box
+import wedo.widemouth.uikt.Root
+import wedo.widemouth.uikt.Column
+import wedo.widemouth.uikt.Constraint
+import wedo.widemouth.uikt.ConstraintScope
+import wedo.widemouth.uikt.Flow
+import wedo.widemouth.uikt.Image
+import wedo.widemouth.uikt.Stub
 import wedo.widemouth.uikt.decoration.IViewEffect
 import wedo.widemouth.uikt.graphics.ColorStateList
 import wedo.widemouth.uikt.graphics.GradientDrawable
@@ -20,6 +28,11 @@ import wedo.widemouth.uikt.property.dpF
 import wedo.widemouth.uikt.property.matchTo
 import wedo.widemouth.uikt.property.size
 import wedo.widemouth.uikt.property.src
+import wedo.widemouth.uikt.boxLayout
+import wedo.widemouth.uikt.merge
+import wedo.widemouth.uikt.referencedIds
+import wedo.widemouth.uikt.verticalStyle
+import wedo.widemouth.uikt.wrapMode
 
 val layout1 =
 	Column {

@@ -1,4 +1,4 @@
-package wedo.widemouth.uikt
+package wedo.widemouth.uikt.app
 
 import android.graphics.Color
 import android.view.View
