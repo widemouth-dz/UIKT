@@ -65,10 +65,6 @@ inline fun <VL : LP> ViewStub(
     noinline block: WidgetReceiver<_ViewStub, VL>,
 ): _ViewStub = Widget(ctx, ::_ViewStub, widgetLayoutBuilder, block)
 
-@Deprecated(
-    message = "Use `Widget` instead for viewConstructor and layoutConstructor performance. ",
-    replaceWith = ReplaceWith("Widget(::viewConstructor, ::layoutConstructor, block)")
-)
 @SinceKotlin(ContextReceiverGenericSinceKotlin)
 inline fun <reified V : View, reified VL : LP> Widget(
     ctx: Context,

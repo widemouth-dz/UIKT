@@ -30,11 +30,6 @@ fun NestedScrollColumn(
     ctx: Context, block: NestedScrollColumnReceiver<MarginLP>
 ): _NestedScrollColumn = Root(ctx, ::_NestedScrollColumn, ::linearLayout, block)
 
-@Deprecated(
-    message = "Use `Root` instead for viewConstructor and layoutConstructor performance.",
-    replaceWith =
-    ReplaceWith("Root(ctx, ::viewConstructor, ::layoutConstructor,  block)")
-)
 @SinceKotlin(ContextReceiverGenericSinceKotlin)
 inline fun <reified G : ViewGroup, reified GSL : LP> Root(
     ctx: Context,

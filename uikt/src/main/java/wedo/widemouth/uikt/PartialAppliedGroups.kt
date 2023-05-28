@@ -91,10 +91,6 @@ inline fun <GL : LP> NestedScrollColumn(
 ): ScopeViewBuilder<_NestedScrollColumn> =
     Root(::_NestedScrollColumn, ::marginLayout, groupLayoutBuilder, block)
 
-@Deprecated(
-    message = "Use `Root` instead for viewConstructor and layoutConstructor performance. ",
-    replaceWith = ReplaceWith("Root(::viewConstructor, ::layoutConstructor, block)")
-)
 @SinceKotlin(ContextReceiverGenericSinceKotlin)
 inline fun <reified G : ViewGroup, reified GSL : LP> Root(
     noinline block: @LayoutMarker context((@ViewMarker G), (@ScopeMarker Scope<GSL>)) MarginLP.() -> Unit

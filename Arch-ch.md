@@ -1,5 +1,41 @@
 # UIKt Arch Doc
 
+## Functionalization
+
+UIKT的基础是高度函数化的。
+
+以下是UIKT的一个基础函数，它已被完全函数化，基础参数和返回值都是函数类型。
+
+```
+typealias ViewBuilder<V> = (ctx: Context) -> V
+typealias LayoutBuilder<L> = () -> L
+typealias ScopeViewBuilder<V> = ViewBuilder<V>
+
+/** Partial applied function of `Group(ctx, ...)`. */
+@SinceKotlin(ContextReceiverGenericSinceKotlin)
+inline fun <G : ViewGroup, GL : LP, GSL : LP> Root(
+    crossinline groupBuilder: ViewBuilder<G>,
+    noinline scopeLayoutBuilder: LayoutBuilder<GSL>,
+    crossinline groupLayoutBuilder: LayoutBuilder<GL>,
+    noinline block: @LayoutMarker context((@ViewMarker G), (@ScopeMarker Scope<GSL>)) GL.() -> Unit,
+): ScopeViewBuilder<G> = { ctx ->
+    Group(ctx, groupBuilder, scopeLayoutBuilder, groupLayoutBuilder, block)
+}
+```
+如下所见，这是一个调用实例，分别传入了四个函数，其优势在于: 
+- 参数并不需要传入真正的实例，只需要将构造方法的函数引用作为参数，比如，`::View`、`::layout`.
+这实现了将繁琐的构造方法变量化，从而得以简化，同时语义更加地清晰。
+- 得益于此，UIKT的扩展可以很方便地进行，事实上，到此，UIKT已经可以很好地工作了，你可以像这样来套用任意View组件。
+- 甚至可以替代泛型反射实现实例化，且不附带反射的性能开销。
+```
+    val homePage = root(context)
+    val detailPage = root(context)
+    
+    val root = Root(::_Box, ::boxLayout, ::marginLayout) {
+    
+    }  
+```
+
 ## [Context receivers](https://github.com/Kotlin/KEEP/blob/context-receivers/proposals/context-receivers.md)
 
 UIKT使用`context receivers`来构建布局DSL，这是一个**实验性**API。
@@ -68,6 +104,27 @@ dsl:    view{
 
 然后，必须将具有三个 receiver 的函数类型定义为冗余的 `lambda`，并且所有这些都没有内联功能。无论如何，我们已经有多个 receiver 。
 
+```
+typealias BoxReceiver<SL> = @LayoutMarker context((@ViewMarker _Box), (@ScopeMarker Scope<BoxLP>)) SL.() -> Unit
+typealias ConstraintReceiver<SL> = @LayoutMarker context((@ViewMarker _Constraint), (@ScopeMarker Scope<ConstraintLP>)) SL.() -> Unit
+typealias RelativeReceiver<SL> = @LayoutMarker context((@ViewMarker _Relative), (@ScopeMarker Scope<RelativeLP>)) SL.() -> Unit
+typealias ColumnReceiver<SL> = @LayoutMarker context((@ViewMarker _Column), (@ScopeMarker Scope<LinearLP>)) SL.() -> Unit
+typealias RowReceiver<SL> = ColumnReceiver<SL>
+
+typealias ViewBuilder<V> = (ctx: Context) -> V
+typealias LayoutBuilder<L> = () -> L
+typealias ScopeViewBuilder<V> = ViewBuilder<V>
+
+@SinceKotlin(ContextReceiverSinceKotlin)
+typealias WidgetReceiver<V, L> = Receiver2<@ViewMarker V, @ScopeMarker @LayoutMarker L>
+// Not supported since `Kotlin 1.7.20`.
+// typealias GroupReceiver<G, SL, L> = Receiver3<@ViewMarker G, @ScopeMarker SL, @LayoutMarker L>
+
+@SinceKotlin(ContextReceiverSinceKotlin)
+typealias Receiver2<R1, R2> = context(R1) R2.() -> Unit
+// Not supported since `Kotlin 1.7.20`.
+// typealias Receiver3<R1, R2, R3> = context(R1, R2) R3.() -> Unit
+```
 
 ## [DslMarker]
 另一个重要的注意事项是 [DslMarker]，我们不仅要考虑来自外部块的隐式 receiver ，还要考虑当前块中的多个 receiver ，
@@ -91,4 +148,63 @@ PartialRoot(block)(context)  // 2
 fun PartialRoot(block): (Context) -> View = { ctx ->
     Root(ctx, block)
 }
+```
+
+```
+/** Partial applied function of `Widget(ctx, ...)`. */
+@SinceKotlin(ContextReceiverGenericSinceKotlin)
+inline fun <V : View, VL : LP> Widget(
+    crossinline viewBuilder: ViewBuilder<V>,
+    crossinline widgetLayoutBuilder: LayoutBuilder<VL>,
+    noinline block: WidgetReceiver<V, VL>,
+): ViewBuilder<V> = { ctx -> Widget(ctx, viewBuilder, widgetLayoutBuilder, block) }
+
+@SinceKotlin(ContextReceiverGenericSinceKotlin)
+inline fun <V : View, VL : LP> Widget(
+    ctx: Context,
+    crossinline viewBuilder: ViewBuilder<V>,
+    crossinline widgetLayoutBuilder: LayoutBuilder<VL>,
+    noinline block: WidgetReceiver<V, VL>,
+): V {
+    val widget = viewBuilder(ctx)
+    val widgetLayout = widgetLayoutBuilder()
+    block(widget, widgetLayout)
+    widget.layoutParams = widgetLayout
+    return widget
+}
+```
+
+## Constructor memory
+对于自定义视图，构建时需要使用反射获取实例，这里通过`Remember`实现记忆，减少反射开销。
+```
+internal class Remember<P, V>(
+	private val keySelector: (P) -> Any? = { it },
+	private val calculation: (P) -> V
+) : ReadOnlyProperty<Any?, (P) -> V> {
+
+	private val map = mutableMapOf<Any?, V>()
+	
+	override fun getValue(thisRef: Any?, property: KProperty<*>): (P) -> V = {
+		map.getOrPut(keySelector(it)) { calculation(it) }
+	}
+}
+
+@PublishedApi
+internal val sViewConstructor: (Class<*>) -> Constructor<*> by Remember {
+	it.getConstructor(Context::class.java)
+}
+
+@PublishedApi
+internal val sLayoutConstructor: (Class<*>) -> Constructor<*> by Remember {
+	it.getConstructor(Int::class.java, Int::class.java)
+}
+
+@PublishedApi
+internal inline fun <reified V : View> viewConstructor(context: Context): V =
+	sViewConstructor(V::class.java).newInstance(context) as V
+
+@PublishedApi
+internal inline fun <reified L : LP> layoutConstructor(
+	width: Int = WRAP_CONTENT, height: Int = WRAP_CONTENT
+): L = sLayoutConstructor(L::class.java).newInstance(width, height) as L
 ```

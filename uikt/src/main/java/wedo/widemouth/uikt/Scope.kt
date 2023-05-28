@@ -90,10 +90,6 @@ class Scope<out SL : LP>(
         crossinline viewBuilder: ViewBuilder<V>, noinline block: WidgetReceiver<V, SL>
     ): V = Widget(group.context, viewBuilder, defaultLayout, block).also(group::addView)
 
-    @Deprecated(
-        message = "Use `Group` instead for viewConstructor and layoutConstructor performance.",
-        replaceWith = ReplaceWith("Group(::viewConstructor, ::layoutConstructor, block)")
-    )
     @SinceKotlin(ContextReceiverGenericSinceKotlin)
     inline fun <reified G : ViewGroup, reified L : LP> Group(
         noinline block: @LayoutMarker context((@ViewMarker G), (@ScopeMarker Scope<L>)) SL.() -> Unit,

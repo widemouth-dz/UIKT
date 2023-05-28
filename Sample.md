@@ -77,6 +77,43 @@ Constraint {
 }
 ```
 
+## Include
+```
+Constraint {
+    Text { 
+    	text = "Content"
+    }
+    
+    // for XML layout.
+    include(R.layout.sample)
+    
+    // or with a block.
+    include(R.layout.sample) {
+        size = 100.dp
+    }
+    
+    // for UIKT layout.
+    include(emptyLayout)
+    
+    // or with a block.
+    include(emptyLayout) {
+        size = MATCH_PARENT
+    }
+}
+
+val emptyLayout =
+    Constraint {
+        Text {
+            text = "Empty"
+        }
+
+        Image {
+            size = 50.dp
+            src = R.drawable.ic_launcher_foreground
+        }
+    }
+```
+
 ## Merge
 ```
 Constraint {
@@ -84,11 +121,11 @@ Constraint {
     	text = "Content"
     }
     
-    merge(emptyLayout)
+    include(emptyWidgets)
 }
 
-val emptyLayout =
-    ConstraintScope {
+val emptyWidgets =
+    ConstraintMerge {
         Text {
             text = "Empty"
         }
