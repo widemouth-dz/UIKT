@@ -1,4 +1,4 @@
-# UIKt Arch Doc
+# UIKT Arch Doc
 
 ## [Context receivers](https://github.com/Kotlin/KEEP/blob/context-receivers/proposals/context-receivers.md)
 

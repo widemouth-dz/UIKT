@@ -14,7 +14,6 @@ UIKT 是关于 Android UI 的`DSL`，它可以使用简单易读的 Kotlin 代�
 |:-----------------:|:-------:|
 |     `context`     | v1.6.20 |
 | `context` generic | v1.7.20 |
-| `context` module  | v1.7.22 |
 
 ### Plugins
 
@@ -22,7 +21,7 @@ UIKT 是关于 Android UI 的`DSL`，它可以使用简单易读的 Kotlin 代�
 
 | Kotlin  | KGP     | Gradle |  AGP   |
 |:-------:|---------|:------:|:------:|
-| v1.7.22 | v1.7.22 | v6.7.1 | v4.0.1 |
+| v1.7.20 | v1.7.20 | v6.7.1 | v4.0.1 |
 
 ## Configuration
 

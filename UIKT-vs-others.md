@@ -58,7 +58,7 @@ linearLayout {
 `Anko-Layouts` resemble `UIKT` highly about features, APIs, functions. Honestly, they are one thing.
 
 Slightly different, a view need to be build with two blocks via `Anko-Layouts`, which, of course, is not a big deal.
-UIKT merges them into one block, at the cost of, which is backed by `Kotlin 1.7.22` (1.6.20 && 1.7.20 && 1.7.22).
+UIKT merges them into one block, at the cost of, which is backed by `Kotlin 1.7.20` (1.6.20 && 1.7.20).
     
 ## [UIKT](./README.md) vs [Splitties Views DSL](https://github.com/LouisCAD/Splitties/tree/main/modules/views-dsl)
 

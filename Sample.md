@@ -1,4 +1,4 @@
-# UIKt Sample
+# UIKT Sample
 
 ## Common components
 ```
@@ -121,6 +121,10 @@ Constraint {
     	text = "Content"
     }
     
+    // for XML merge
+    include(R.layout.merge)
+    
+    // for UIKT merge
     include(emptyWidgets)
 }
 
@@ -144,7 +148,10 @@ Constraint {
     	text = "Content"
     }
     
+    val (emptyId) = createIds()
+    
     Stub { 
+        inflatedId = emptyId
     	inflate = emptyLayout
     	// Call Stub.inflate() to inflate emptyLayout.
     }

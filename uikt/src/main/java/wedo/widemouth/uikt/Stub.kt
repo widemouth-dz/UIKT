@@ -13,6 +13,7 @@ class StubView(context: Context) : View(context) {
     private var mInflatedViewRef: WeakReference<View>? = null
 
     var inflate: ScopeViewBuilder<View>? = null
+    var inflatedId: Int = NO_ID
 
     init {
         visibility = GONE
@@ -21,6 +22,7 @@ class StubView(context: Context) : View(context) {
 
     fun inflate(): View {
         val view = inflate?.invoke(context) ?: error("Stub must have a valid scope layout")
+        if (inflatedId != NO_ID) view.id = inflatedId
         mInflatedViewRef = WeakReference(view)
         val stubParent = parent as? ViewGroup ?: error("Stub must have a non-null ViewGroup parent")
         stubParent.addView(view, stubParent.indexOfChild(this), layoutParams)

@@ -15,7 +15,6 @@ then choose one of them based on compatibility and your preferences.
 |:-----------------:|:-------:|
 |     `context`     | v1.6.20 |
 | `context` generic | v1.7.20 |
-| `context` module  | v1.7.22 |
 
 ### Plugins
 
@@ -23,7 +22,7 @@ Here are Kotlin upgrade recommendations, [Gradle | Kotlin Doc](https://kotlinlan
 
 | Kotlin  | KGP     | Gradle |  AGP   |
 |:-------:|---------|:------:|:------:|
-| v1.7.22 | v1.7.22 | v6.7.1 | v4.0.1 |
+| v1.7.20 | v1.7.20 | v6.7.1 | v4.0.1 |
 
 ## Configuration
 

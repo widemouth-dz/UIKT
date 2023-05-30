@@ -138,7 +138,10 @@ val layout5 =
             validate()
         }
 
+        val (emptyId) = createIds()
+
         Stub {
+            inflatedId = emptyId
             inflate = emptyLayout
         }
     }
