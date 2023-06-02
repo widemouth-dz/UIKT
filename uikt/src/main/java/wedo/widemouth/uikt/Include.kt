@@ -37,12 +37,12 @@ fun <SL : LP> Scope<SL>.include(
 }
 
 /** The root tag in [layoutResId] must be a valid view, use `include(Int)` if the root tag is <merge>. */
-fun <V : View, SL : LP> Scope<SL>.include(
-    @LayoutRes layoutResId: Int, block: WidgetReceiver<V, SL>,
-): V = _Widget(block) {
-    @Suppress("UNCHECKED_CAST")
-    LayoutInflater.from(it).inflate(layoutResId, group, false).also(group::addView) as V
-}
+//fun <V : View, SL : LP> Scope<SL>.include(
+//    @LayoutRes layoutResId: Int, block: WidgetReceiver<V, SL>,
+//): V = _Widget(block) {
+//    @Suppress("UNCHECKED_CAST")
+//    LayoutInflater.from(it).inflate(layoutResId, group, false).also(group::addView) as V
+//}
 
 fun <SL : LP> Scope<SL>.include(block: MergeReceiver<SL>) = block()
 

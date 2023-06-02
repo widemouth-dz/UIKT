@@ -2,30 +2,17 @@ package wedo.widemouth.uikt
 
 import android.content.Context
 import android.view.View
-import androidx.appcompat.widget.LinearLayoutCompat
+import android.widget.LinearLayout
 import wedo.widemouth.uikt.property.WRAP_CONTENT
 import java.lang.reflect.Constructor
-import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KProperty
-
-internal class Remember<P, V>(
-	private val keySelector: (P) -> Any? = { it },
-	private val calculation: (P) -> V
-) : ReadOnlyProperty<Any?, (P) -> V> {
-
-	private val map = mutableMapOf<Any?, V>()
-	override fun getValue(thisRef: Any?, property: KProperty<*>): (P) -> V = {
-		map.getOrPut(keySelector(it)) { calculation(it) }
-	}
-}
 
 @PublishedApi
-internal val sViewConstructor: (Class<*>) -> Constructor<*> by Remember {
+internal val sViewConstructor: (Class<*>) -> Constructor<*> = remember {
 	it.getConstructor(Context::class.java)
 }
 
 @PublishedApi
-internal val sLayoutConstructor: (Class<*>) -> Constructor<*> by Remember {
+internal val sLayoutConstructor: (Class<*>) -> Constructor<*> = remember {
 	it.getConstructor(Int::class.java, Int::class.java)
 }
 
@@ -39,4 +26,4 @@ internal inline fun <reified L : LP> layoutConstructor(
 ): L = sLayoutConstructor(L::class.java).newInstance(width, height) as L
 
 @PublishedApi
-internal fun _column(ctx: Context) = _Column(ctx).apply { orientation = LinearLayoutCompat.VERTICAL }
+internal fun _column(ctx: Context) = _Column(ctx).apply { orientation = LinearLayout.VERTICAL }

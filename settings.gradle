@@ -15,3 +15,5 @@ dependencyResolutionManagement {
 rootProject.name = "UIKT"
 include ':app'
 include ':uikt'
+include ':compiler'
+include ':annotation'

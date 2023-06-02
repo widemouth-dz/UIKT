@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.TextView
 
 /**
- * Widget partial applied functions, for example:
+ * DslWidget partial applied functions, for example:
  * ```
  * Text(::boxLayout){ ... }(ctx)
  * ```
@@ -103,7 +103,7 @@ inline fun <V : View> Widget(
     noinline block: WidgetReceiver<V, MarginLP>,
 ): ViewBuilder<V> = Widget(viewBuilder, ::marginLayout, block)
 
-/** Partial applied function of `Widget(ctx, ...)`. */
+/** Partial applied function of `DslWidget(ctx, ...)`. */
 @SinceKotlin(ContextReceiverGenericSinceKotlin)
 inline fun <V : View, VL : LP> Widget(
     crossinline viewBuilder: ViewBuilder<V>,

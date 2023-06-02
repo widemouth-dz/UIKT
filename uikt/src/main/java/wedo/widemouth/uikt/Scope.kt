@@ -73,8 +73,8 @@ class Scope<out SL : LP>(
         Group(::_NestedScrollColumn,::marginLayout, block)
 
     @Deprecated(
-        message = "Use `Widget` instead for viewConstructor performance.",
-        replaceWith = ReplaceWith("Widget(::viewConstructor, block)")
+        message = "Use `DslWidget` instead for viewConstructor performance.",
+        replaceWith = ReplaceWith("DslWidget(::viewConstructor, block)")
     )
     @SinceKotlin(ContextReceiverGenericSinceKotlin)
     inline fun <reified V : View> Widget(noinline block: WidgetReceiver<V, SL>): V =

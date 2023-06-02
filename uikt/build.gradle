@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'com.google.devtools.ksp' version '1.7.20-1.0.8'
 }
 
 android {
@@ -29,9 +31,22 @@ android {
         jvmTarget = '1.8'
         freeCompilerArgs = freeCompilerArgs + ["-Xcontext-receivers"]
     }
+
+
+    libraryVariants.all { variant ->
+        kotlin.sourceSets {
+            getByName(variant.name) {
+                kotlin.srcDir("build/generated/ksp/${variant.name}/kotlin")
+            }
+        }
+    }
 }
 
 dependencies {
+
+    implementation project(':annotation')
+    kapt project(':compiler')
+    ksp project(':compiler')
 
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'

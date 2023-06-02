@@ -2,7 +2,15 @@ package wedo.widemouth.uikt.decoration
 
 import android.graphics.Canvas
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import androidx.annotation.IntDef
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import wedo.widemouth.annotation.DslGroup
 
 /**
  * This is an extension for view, implemented by [ViewEffectHelper]
@@ -17,6 +25,18 @@ import androidx.annotation.IntDef
  * @author WideMouth
  * @since 2023/3/7
  */
+@DslGroup(
+	[
+		ConstraintLayout::class,
+		FrameLayout::class,
+		RelativeLayout::class,
+		LinearLayout::class,
+		CoordinatorLayout::class,
+
+		ImageButton::class,
+		ImageView::class
+	]
+)
 interface IViewEffect {
 	companion object {
 		const val HIDE_RADIUS_SIDE_NONE = 0
@@ -92,7 +112,7 @@ interface IViewEffect {
 		topDividerInsetLeft: Int = this.topDividerInsetLeft,
 		topDividerInsetRight: Int = this.topDividerInsetRight,
 		topDividerColor: Int = this.topDividerColor,
-		topDividerAlpha: Int = this.topDividerAlpha
+		topDividerAlpha: Int = this.topDividerAlpha,
 	) {
 		this.topDividerHeight = topDividerHeight
 		this.topDividerInsetLeft = topDividerInsetLeft
@@ -106,7 +126,7 @@ interface IViewEffect {
 		bottomDividerInsetLeft: Int = this.bottomDividerInsetLeft,
 		bottomDividerInsetRight: Int = this.bottomDividerInsetRight,
 		bottomDividerColor: Int = this.bottomDividerColor,
-		bottomDividerAlpha: Int = this.bottomDividerAlpha
+		bottomDividerAlpha: Int = this.bottomDividerAlpha,
 	) {
 		this.bottomDividerHeight = bottomDividerHeight
 		this.bottomDividerInsetLeft = bottomDividerInsetLeft
@@ -120,7 +140,7 @@ interface IViewEffect {
 		leftDividerInsetTop: Int = this.leftDividerInsetTop,
 		leftDividerInsetBottom: Int = this.leftDividerInsetBottom,
 		leftDividerColor: Int = this.leftDividerColor,
-		leftDividerAlpha: Int = this.leftDividerAlpha
+		leftDividerAlpha: Int = this.leftDividerAlpha,
 	) {
 		this.leftDividerWidth = leftDividerWidth
 		this.leftDividerInsetTop = leftDividerInsetTop
@@ -134,7 +154,7 @@ interface IViewEffect {
 		rightDividerInsetTop: Int = this.rightDividerInsetTop,
 		rightDividerInsetBottom: Int = this.rightDividerInsetBottom,
 		rightDividerColor: Int = this.rightDividerColor,
-		rightDividerAlpha: Int = this.rightDividerAlpha
+		rightDividerAlpha: Int = this.rightDividerAlpha,
 	) {
 		this.rightDividerWidth = rightDividerWidth
 		this.rightDividerInsetTop = rightDividerInsetTop
@@ -150,7 +170,7 @@ interface IViewEffect {
 	fun measureDelegate(
 		widthMeasureSpec: Int,
 		heightMeasureSpec: Int,
-		measure: (widthMeasuredSpec: Int, heightMeasuredSpec: Int) -> Unit
+		measure: (widthMeasuredSpec: Int, heightMeasuredSpec: Int) -> Unit,
 	)
 
 }

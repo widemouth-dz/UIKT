@@ -3,17 +3,14 @@ package wedo.widemouth.uikt.app
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.constraintlayout.solver.widgets.Flow
-import androidx.core.view.isVisible
 import wedo.widemouth.uikt.Box
 import wedo.widemouth.uikt.Root
 import wedo.widemouth.uikt.Column
 import wedo.widemouth.uikt.Constraint
-import wedo.widemouth.uikt.ConstraintLP
 import wedo.widemouth.uikt.ConstraintMerge
 import wedo.widemouth.uikt.Flow
 import wedo.widemouth.uikt.Image

@@ -175,27 +175,24 @@ inline fun <V : View, VL : LP> Widget(
 ```
 
 ## Constructor memory
-对于自定义视图，构建时需要使用反射获取实例，这里通过`Remember`实现记忆，减少反射开销。
+对于自定义视图，构建时需要使用反射获取实例，这里通过`remember`实现记忆，减少反射开销。
 ```
-internal class Remember<P, V>(
-	private val keySelector: (P) -> Any? = { it },
-	private val calculation: (P) -> V
-) : ReadOnlyProperty<Any?, (P) -> V> {
-
-	private val map = mutableMapOf<Any?, V>()
-	
-	override fun getValue(thisRef: Any?, property: KProperty<*>): (P) -> V = {
-		map.getOrPut(keySelector(it)) { calculation(it) }
-	}
+@PublishedApi
+internal fun <P, V> remember(
+	keySelector: (P) -> Any? = { it },
+	cache: MutableMap<Any?, V> = mutableMapOf(),
+	function: (P) -> V,
+): (P) -> V {
+    return { cache.getOrPut(keySelector(it)) { function(it) } }
 }
 
 @PublishedApi
-internal val sViewConstructor: (Class<*>) -> Constructor<*> by Remember {
+internal val sViewConstructor: (Class<*>) -> Constructor<*> = remember {
 	it.getConstructor(Context::class.java)
 }
 
 @PublishedApi
-internal val sLayoutConstructor: (Class<*>) -> Constructor<*> by Remember {
+internal val sLayoutConstructor: (Class<*>) -> Constructor<*> = remember {
 	it.getConstructor(Int::class.java, Int::class.java)
 }
 
