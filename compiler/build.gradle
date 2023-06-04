@@ -9,6 +9,42 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+java.sourceSets {
+    main {
+        java.srcDirs += "src/main/kotlin"
+    }
+}
+
+tasks.compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = freeCompilerArgs + [
+                "-opt-in=com.google.devtools.ksp.KspExperimental",
+                "-opt-in=com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview"
+        ]
+    }
+}
+
+tasks.compileKotlin{
+    kotlinOptions {
+        freeCompilerArgs = [
+                "-opt-in=com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview",
+                "-opt-in=com.google.devtools.ksp.KspExperimental",
+                "-opt-in=kotlin.contracts.ExperimentalContracts"
+        ]
+    }
+}
+
+//tasks.withType<KotlinCompile>().configureEach {
+//    kotlinOptions {
+//        freeCompilerArgs = listOf(
+//                "-Xopt-in=com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview",
+//                "-Xopt-in=com.google.devtools.ksp.KspExperimental",
+//                "-Xopt-in=kotlin.contracts.ExperimentalContracts"
+//        )
+//    }
+//}
+
+
 dependencies {
     def kotlinpoet_version = "1.14.1"
     def auto_service_version = "1.0-rc6"

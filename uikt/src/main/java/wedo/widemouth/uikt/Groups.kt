@@ -4,31 +4,60 @@ package wedo.widemouth.uikt
 
 import android.content.Context
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.HorizontalScrollView
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
+import android.widget.ScrollView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.widget.NestedScrollView
+import wedo.widemouth.annotation.DslGroup
+import wedo.widemouth.uikt.decoration.ConstraintLayoutExt
+import wedo.widemouth.uikt.decoration.CoordinatorLayoutExt
+import wedo.widemouth.uikt.decoration.FrameLayoutExt
+import wedo.widemouth.uikt.decoration.LinearLayoutExt
+import wedo.widemouth.uikt.decoration.RelativeLayoutExt
+import wedo.widemouth.uikt.property.WRAP_CONTENT
 
-fun Box(ctx: Context, block: BoxReceiver<MarginLP>): _Box =
-    Root(ctx, ::_Box, ::boxLayout, block)
+/**
+ * Group partial applied functions, for example:
+ * ```
+ * 	Box{ ... }(ctx)
+ * ```
+ * or
+ * ```
+ * 	val ui =
+ * 		Box{
+ * 			...
+ * 		}
+ * 	val box = ui(ctx)
+ * ```
+ */
+@SinceKotlin(ContextReceiverGenericSinceKotlin)
+inline fun <reified G : ViewGroup, reified GSL : LP> Root(
+    noinline block: @LayoutMarker context((@ViewMarker G), (@ScopeMarker Scope<GSL>)) MarginLP.() -> Unit
+): ScopeViewBuilder<G> =
+    Root(::viewConstructor, ::layoutConstructor, block)
 
-fun Constraint(ctx: Context, block: ConstraintReceiver<MarginLP>): _Constraint =
-    Root(ctx, ::_Constraint, ::constraintLayout, block)
+@SinceKotlin(ContextReceiverGenericSinceKotlin)
+inline fun <G : ViewGroup, GSL : LP> Root(
+    crossinline groupBuilder: ViewBuilder<G>,
+    noinline scopeLayoutBuilder: LayoutBuilder<GSL>,
+    noinline block: @LayoutMarker context((@ViewMarker G), (@ScopeMarker Scope<GSL>)) MarginLP.() -> Unit
+): ScopeViewBuilder<G> =
+    Root(groupBuilder, scopeLayoutBuilder, ::marginLayout, block)
 
-fun Relative(ctx: Context, block: RelativeReceiver<MarginLP>): _Relative =
-    Root(ctx, ::_Relative, ::relativeLayout, block)
-
-fun Row(ctx: Context, block: RowReceiver<MarginLP>): _Row =
-    Root(ctx, ::_Row, ::linearLayout, block)
-
-fun Column(ctx: Context, block: ColumnReceiver<MarginLP>): _Column =
-    Root(ctx, ::_column, ::linearLayout, block)
-
-fun ScrollRow(ctx: Context, block: ScrollRowReceiver<MarginLP>): _ScrollRow =
-    Root(ctx, ::_ScrollRow, ::linearLayout, block)
-
-fun ScrollColumn(ctx: Context, block: ScrollColumnReceiver<MarginLP>): _ScrollColumn =
-    Root(ctx, ::_ScrollColumn, ::linearLayout, block)
-
-fun NestedScrollColumn(
-    ctx: Context, block: NestedScrollColumnReceiver<MarginLP>
-): _NestedScrollColumn = Root(ctx, ::_NestedScrollColumn, ::linearLayout, block)
+/** Partial applied function of `Group(ctx, ...)`. */
+@SinceKotlin(ContextReceiverGenericSinceKotlin)
+inline fun <G : ViewGroup, GL : LP, GSL : LP> Root(
+    crossinline groupBuilder: ViewBuilder<G>,
+    noinline scopeLayoutBuilder: LayoutBuilder<GSL>,
+    crossinline groupLayoutBuilder: LayoutBuilder<GL>,
+    noinline block: @LayoutMarker context((@ViewMarker G), (@ScopeMarker Scope<GSL>)) GL.() -> Unit,
+): ScopeViewBuilder<G> = { ctx ->
+    Group(ctx, groupBuilder, scopeLayoutBuilder, groupLayoutBuilder, block)
+}
 
 @SinceKotlin(ContextReceiverGenericSinceKotlin)
 inline fun <reified G : ViewGroup, reified GSL : LP> Root(
@@ -48,23 +77,43 @@ inline fun <G : ViewGroup, GSL : LP> Root(
 @SinceKotlin(ContextReceiverGenericSinceKotlin)
 inline fun <G : ViewGroup, GL : LP, GSL : LP> Root(
     ctx: Context,
-    crossinline groupBuilder: ViewBuilder<G>,
+    groupBuilder: ViewBuilder<G>,
     noinline scopeLayoutBuilder: LayoutBuilder<GSL>,
     groupLayoutBuilder: LayoutBuilder<GL>,
     noinline block: @LayoutMarker context((@ViewMarker G), (@ScopeMarker Scope<GSL>)) GL.() -> Unit,
 ): G = Group(ctx, groupBuilder, scopeLayoutBuilder, groupLayoutBuilder, block)
 
+@DslGroup(
+    [
+        ConstraintLayoutExt::class,
+        FrameLayoutExt::class,
+        RelativeLayoutExt::class,
+//        LinearLayoutExt::class,
+//        CoordinatorLayoutExt::class,
+//        ScrollViewExt::class,
+
+//        ConstraintLayout::class,
+        FrameLayout::class,
+        RelativeLayout::class,
+        LinearLayout::class,
+        CoordinatorLayout::class,
+
+        ScrollView::class,
+        HorizontalScrollView::class,
+        NestedScrollView::class
+    ]
+)
 @PublishedApi
 @SinceKotlin(ContextReceiverGenericSinceKotlin)
 internal inline fun <G : ViewGroup, GL : LP, GSL : LP> Group(
     ctx: Context,
-    crossinline groupBuilder: ViewBuilder<G>,
+    groupBuilder: ViewBuilder<G>,
     noinline scopeLayoutBuilder: LayoutBuilder<GSL>,
     groupLayoutBuilder: LayoutBuilder<GL>,
     noinline block: @LayoutMarker context((@ViewMarker G), (@ScopeMarker Scope<GSL>))  GL.() -> Unit,
 ): G {
     val group = groupBuilder(ctx)
-    val groupLayout = groupLayoutBuilder()
+    val groupLayout = groupLayoutBuilder(WRAP_CONTENT, WRAP_CONTENT)
     block(group, Scope(group, scopeLayoutBuilder), groupLayout)
     group.layoutParams = groupLayout
     return group

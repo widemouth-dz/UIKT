@@ -7,10 +7,13 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.ScrollView
 import androidx.annotation.IntDef
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import wedo.widemouth.annotation.DslGroup
+import wedo.widemouth.annotation.ViewEffectGroup
 
 /**
  * This is an extension for view, implemented by [ViewEffectHelper]
@@ -25,13 +28,16 @@ import wedo.widemouth.annotation.DslGroup
  * @author WideMouth
  * @since 2023/3/7
  */
-@DslGroup(
+@ViewEffectGroup(
 	[
 		ConstraintLayout::class,
 		FrameLayout::class,
 		RelativeLayout::class,
 		LinearLayout::class,
 		CoordinatorLayout::class,
+//		ScrollView::class,
+
+		AppCompatImageView::class,
 
 		ImageButton::class,
 		ImageView::class

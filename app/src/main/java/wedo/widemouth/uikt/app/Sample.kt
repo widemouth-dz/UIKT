@@ -14,7 +14,9 @@ import wedo.widemouth.uikt.Constraint
 import wedo.widemouth.uikt.ConstraintMerge
 import wedo.widemouth.uikt.Flow
 import wedo.widemouth.uikt.Image
+import wedo.widemouth.uikt.LP
 import wedo.widemouth.uikt.Stub
+import wedo.widemouth.uikt.WidgetReceiver
 import wedo.widemouth.uikt.decoration.IViewEffect
 import wedo.widemouth.uikt.graphics.ColorStateList
 import wedo.widemouth.uikt.graphics.GradientDrawable
@@ -215,7 +217,7 @@ val drawables =
 
 
 //fun <SL : LP> Scope<SL>.LazyGridColumn(block: WidgetReceiver<VerticalGridView, SL>) =
-//	Widget(::VerticalGridView, block)
+	Widget(::VerticalGridView, block)
 //
 //fun <SL : LP> Scope<SL>.LazyGridRow(block: WidgetReceiver<HorizontalGridView, SL>) =
 //	Widget(::HorizontalGridView, block)

@@ -25,5 +25,5 @@ internal inline fun <reified L : LP> layoutConstructor(
 	width: Int = WRAP_CONTENT, height: Int = WRAP_CONTENT
 ): L = sLayoutConstructor(L::class.java).newInstance(width, height) as L
 
-@PublishedApi
-internal fun _column(ctx: Context) = _Column(ctx).apply { orientation = LinearLayout.VERTICAL }
+//@PublishedApi
+//internal fun _column(ctx: Context) = _Column(ctx).apply { orientation = LinearLayout.VERTICAL }
