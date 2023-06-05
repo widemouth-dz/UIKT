@@ -1,1 +1,3 @@
+wedo.widemouth.compiler.ksp.DslGroupKspProvider
+wedo.widemouth.compiler.ksp.DslWidgetKspProvider
 wedo.widemouth.compiler.ksp.ViewEffectKspProvider

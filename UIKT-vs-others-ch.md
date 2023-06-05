@@ -40,7 +40,7 @@ XMl是创建Android所有UI的方式，包括layout，drawable，color...
 ## [UIKT](./README-ch.md) vs [Anko-Layouts](https://github.com/Kotlin/anko/wiki/Anko-Layouts)
 
 > `Anko-Layouts` is a Android UI DSL makes the same logic easy to read, easy to write and there is no runtime overhead. Here it is again:
-```
+```kotlin
 linearLayout {
     button("Login") {
         textSize = 26f

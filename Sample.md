@@ -1,7 +1,8 @@
 # UIKT Sample
 
 ## Common components
-```
+
+```kotlin
 Column {
 
     Row {
@@ -26,7 +27,8 @@ Column {
 ```
 
 ## Custom components
-```
+
+```kotlin
 class GroupExt(context: Context) : FrameLayout(context)
 
 class ImageExt(context: Context) : AppCompatImageView(context)
@@ -42,7 +44,8 @@ Root(::GroupExt, ::boxLayout) {
 ```
 
 ## Constraint layout
-```
+
+```kotlin
 Constraint {
 
     Image {
@@ -78,7 +81,8 @@ Constraint {
 ```
 
 ## Include
-```
+
+```kotlin
 Constraint {
     Text { 
     	text = "Content"
@@ -115,7 +119,8 @@ val emptyLayout =
 ```
 
 ## Merge
-```
+
+```kotlin
 Constraint {
     Text { 
     	text = "Content"
@@ -142,7 +147,8 @@ val emptyWidgets =
 ```
 
 ## Stub
-```
+
+```kotlin
 Constraint {
     Text {
     	text = "Content"
@@ -171,7 +177,8 @@ val emptyLayout =
 ```
 ## Extension
 Like that for `Leanback` components.
-```
+
+```kotlin
 fun <SL : LP> Scope<SL>.LazyGridColumn(block: WidgetReceiver<VerticalGridView, SL>) =
 	Widget(::VerticalGridView, block)
 
@@ -192,8 +199,9 @@ Column {
 ```
 
 ## View properties
+
 In code:
-```
+```kotlin
 Image { // or Box, Constraint, Column, Row ...
 
     radius = 6.dp
@@ -212,12 +220,12 @@ Image { // or Box, Constraint, Column, Row ...
     
     bottomDividerHeight = 1.dp
     bottomDividerColor = Color.GRAY
-    ...
+    // ...
 }
 ```
 In XML:
-```
-<...Ext
+```xml
+<SomeExt
     android:id="@+id/ext"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -234,11 +242,12 @@ In XML:
     app:borderColor="@color/black"
     app:radius="6dp"
     app:isRadiusAdjustBounds="true"
-    ...	/>
+   	/>
+    <!-- attrs ...-->
 ```
 ## GradientDrawable
 
-```
+```kotlin
 GradientDrawable(
     color = Color.BLUE,
     alpha = 0.5f,
@@ -257,7 +266,7 @@ GradientDrawable(
 
 ## StateListDrawable
 
-```
+```kotlin
 StateListDrawable(
     ViewState.FOCUSED + !ViewState.SELECTED to ColorDrawable(Color.BLUE),
     !ViewState.FOCUSED + ViewState.SELECTED to ColorDrawable(Color.GREEN),
@@ -270,7 +279,7 @@ StateListDrawable(
 
 ## ColorStateList
 
-```
+```kotlin
 ColorStateList(
     ViewState.FOCUSED + !ViewState.SELECTED to Color.BLUE,
     !ViewState.FOCUSED + ViewState.SELECTED to Color.GREEN,

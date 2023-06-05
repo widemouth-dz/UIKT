@@ -1,4 +1,4 @@
-package wedo.widemouth.compiler.ksp
+package wedo.widemouth.compiler.generator
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -13,19 +13,19 @@ import com.squareup.kotlinpoet.TypeVariableName
  * @author WideMouth
  * @since 2023/6/3
  */
-object WidgetPoet {
+object DslWidgetGenerator {
 
     private val mTasks = mapOf(
-        "ScopeWidget" to ::buildScopeWidgetFun,
-        "Widget" to ::buildWidgetFun,
-        "WidgetWithDefaultLP" to ::buildWidgetWithDefaultLPFun,
-        "PartialWidget" to ::buildWidgetPartialFun,
-        "PartialWidgetWithDefaultLP" to ::buildWidgetPartialFunWithDefaultLPFun
+        "ScopeWidget" to DslWidgetGenerator::buildScopeWidgetFun,
+        "Widget" to DslWidgetGenerator::buildWidgetFun,
+        "WidgetWithDefaultLP" to DslWidgetGenerator::buildWidgetWithDefaultLPFun,
+        "PartialWidget" to DslWidgetGenerator::buildWidgetPartialFun,
+        "PartialWidgetWithDefaultLP" to DslWidgetGenerator::buildWidgetPartialFunWithDefaultLPFun
     )
 
-    fun process(dslWidgets: Sequence<ClassName>, fileProcessor: (FileSpec) -> Unit) {
+    fun generate(dslWidgets: Sequence<ClassName>, fileProcessor: (FileSpec) -> Unit) {
         mTasks.forEach { task ->
-            val fileBuilder = FileSpec.builder(sPackage, task.key)
+            val fileBuilder = FileSpec.builder(sGeneratedPackage, task.key)
             dslWidgets.forEach {
                 fileBuilder.addFunction(task.value(it))
             }
@@ -129,11 +129,11 @@ object WidgetPoet {
     }
 
 
-    private const val sPackage = "wedo.widemouth.generated"
-    private const val sUiktPackageName = "wedo.widemouth.uikt"
-    private const val sWidget = "Widgets"
 
-    val sLPName = ClassName(sUiktPackageName, "LP")
+    private const val sUiktPackageName = "wedo.widemouth.uikt"
+    private const val sGeneratedPackage = sUiktPackageName
+
+    private val sLPName = ClassName(sUiktPackageName, "LP")
 
     private const val sWidgetLayoutTypeVariable = "VL"
     private val sWidgetLayoutTypeVariableName = TypeVariableName(sWidgetLayoutTypeVariable)

@@ -36,6 +36,10 @@ android {
         kotlin.srcDir("$buildDir/generated/ksp/$name/kotlin/")
     }
 
+    ksp {
+        arg("group", "true")
+    }
+
 
 //    libraryVariants.all { variant ->
 //        kotlin.sourceSets {

@@ -36,7 +36,7 @@ kotlinOptions {
 
 ## Sample
 See [Sample](./Sample.md) for details.
-```
+```kotlin
 Column {
 
     Row {

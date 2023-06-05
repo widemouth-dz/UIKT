@@ -14,7 +14,9 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import wedo.widemouth.annotation.DslWidget
-import wedo.widemouth.uikt.decoration.AppCompatImageViewExt
+import wedo.widemouth.annotation.DslWidgetDeferred
+import wedo.widemouth.uikt.decoration.FrameLayoutExt
+import wedo.widemouth.uikt.decoration.ImageViewExt
 import wedo.widemouth.uikt.property.WRAP_CONTENT
 
 /**
@@ -44,43 +46,47 @@ inline fun <V : View, VL : LP> Widget(
 
 @SinceKotlin(ContextReceiverGenericSinceKotlin)
 inline fun <reified V : View, reified VL : LP> Widget(
-    ctx: Context,
-    noinline block: WidgetReceiver<V, VL>,
+	ctx: Context,
+	noinline block: WidgetReceiver<V, VL>,
 ): ViewBuilder<V> = Widget(ctx, ::viewConstructor, ::layoutConstructor, block)
 
 @SinceKotlin(ContextReceiverGenericSinceKotlin)
 inline fun <V : View> Widget(
-    ctx: Context,
-    crossinline viewBuilder: ViewBuilder<V>,
-    noinline block: WidgetReceiver<V, MarginLP>,
+	ctx: Context,
+	crossinline viewBuilder: ViewBuilder<V>,
+	noinline block: WidgetReceiver<V, MarginLP>,
 ): V = Widget(ctx, viewBuilder, ::marginLayout, block)
 
+@DslWidgetDeferred(
+	[
+		ImageViewExt::class,
+		FrameLayoutExt::class
+	]
+)
 @DslWidget(
-    [
-        AppCompatImageViewExt::class,
+	[
+		ConstraintLayout::class,
+		FrameLayout::class,
+		RelativeLayout::class,
+		LinearLayout::class,
+		CoordinatorLayout::class,
 
-        ConstraintLayout::class,
-        FrameLayout::class,
-        RelativeLayout::class,
-        LinearLayout::class,
-        CoordinatorLayout::class,
-
-        TextView::class,
-        Button::class,
-        ImageButton::class,
-        ImageView::class
-    ]
+		TextView::class,
+		Button::class,
+		ImageButton::class,
+		ImageView::class
+	]
 )
 @SinceKotlin(ContextReceiverGenericSinceKotlin)
 inline fun <V : View, VL : LP> Widget(
-    ctx: Context,
-    crossinline viewBuilder: ViewBuilder<V>,
-    crossinline widgetLayoutBuilder: LayoutBuilder<VL>,
-    noinline block: WidgetReceiver<V, VL>,
+	ctx: Context,
+	crossinline viewBuilder: ViewBuilder<V>,
+	crossinline widgetLayoutBuilder: LayoutBuilder<VL>,
+	noinline block: WidgetReceiver<V, VL>,
 ): V {
-    val widget = viewBuilder(ctx)
-    val widgetLayout = widgetLayoutBuilder(WRAP_CONTENT, WRAP_CONTENT)
-    block(widget, widgetLayout)
-    widget.layoutParams = widgetLayout
-    return widget
+	val widget = viewBuilder(ctx)
+	val widgetLayout = widgetLayoutBuilder(WRAP_CONTENT, WRAP_CONTENT)
+	block(widget, widgetLayout)
+	widget.layoutParams = widgetLayout
+	return widget
 }

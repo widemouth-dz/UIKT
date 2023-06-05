@@ -1,6 +1,5 @@
 package wedo.widemouth.compiler.ksp
 
-import com.google.auto.service.AutoService
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
@@ -8,57 +7,53 @@ import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
-import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
 import wedo.widemouth.annotation.DslWidget
+import wedo.widemouth.annotation.DslWidgetDeferred
+import wedo.widemouth.compiler.findClassesInAnnotation
+import wedo.widemouth.compiler.generator.DslWidgetGenerator
 import java.io.IOException
 
-//@AutoService(SymbolProcessorProvider::class)
 class DslWidgetKspProvider : SymbolProcessorProvider {
-    override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
-        DslWidgetKsp(environment.codeGenerator, environment.logger, environment.options)
+	override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
+		DslWidgetKsp(environment.codeGenerator, environment.logger, environment.options)
 }
 
 class DslWidgetKsp(
-    private val codeGenerator: CodeGenerator,
-    private val logger: KSPLogger,
-    private val options: Map<String, String>,
+	private val codeGenerator: CodeGenerator,
+	private val logger: KSPLogger,
+	private val options: Map<String, String>,
 ) : SymbolProcessor {
 
-    override fun process(resolver: Resolver): List<KSAnnotated> {
-        logger.warn("$this DslWidgetKsp process start")
-        val symbols = resolver.getSymbolsWithAnnotation(DslWidget::class.java.canonicalName)
+	override fun process(resolver: Resolver): List<KSAnnotated> {
+		logger.warn("DslWidgetKsp process start")
+		val symbols = resolver.getSymbolsWithAnnotation(DslWidget::class.java.name)
+		var widgets = symbols.findClassesInAnnotation(DslWidget::class)
 
-        val dslWidgets = mutableSetOf<KSType>()
+		val deferredSymbols = resolver.getSymbolsWithAnnotation(DslWidgetDeferred::class.java.name)
 
-        symbols.forEach { symbol ->
-            symbol.annotations.filter { it.shortName.asString() == DslWidget::class.simpleName }
-                .forEach { annotation ->
-                    annotation.arguments.forEach { argument ->
-                        @Suppress("UNCHECKED_CAST")
-                        when (argument.name?.asString()) {
-                            "widgetClasses" -> dslWidgets.addAll(argument.value as ArrayList<KSType>)
-                        }
-                    }
-                }
-        }
+		val deferredWidgetMap = deferredSymbols.associateWith {
+			it.findClassesInAnnotation(DslWidgetDeferred::class)
+		}
 
-        logger.warn("DslWidgetKsp dslWidgets size = ${dslWidgets.size}")
+		if (deferredWidgetMap.any { it.value.none() })
+			return (symbols + deferredSymbols).distinct().toList()
 
-        if (dslWidgets.any { it.isError }) return symbols.toList()
+		widgets += deferredWidgetMap.flatMap { it.value }
 
-        WidgetPoet.process(dslWidgets.asSequence().map { it.toClassName() }) {
-            try {
+		if (widgets.none()) return emptyList()
 
-                it.writeTo(codeGenerator, true)
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-        logger.warn("DslWidgetKsp process end")
-        return emptyList()
-    }
+		DslWidgetGenerator.generate(widgets.map { it.toClassName() }) {
+			try {
+				it.writeTo(codeGenerator, true)
+			} catch (e: IOException) {
+				e.printStackTrace()
+			}
+		}
+		logger.warn("DslWidgetKsp process end")
+		return emptyList()
+	}
 
 
 }

@@ -6,7 +6,7 @@ UIKT的基础高度函数化。
 
 下面是UIKT的一个基础函数，参数和返回值都是函数类型。
 
-```
+```kotlin
 typealias ViewBuilder<V> = (ctx: Context) -> V
 typealias LayoutBuilder<L> = () -> L
 typealias ScopeViewBuilder<V> = ViewBuilder<V>
@@ -27,7 +27,7 @@ inline fun <G : ViewGroup, GL : LP, GSL : LP> Root(
 使函数调用足够简单，同时语义更加地清晰。
 - UIKT的扩展可以很方便地进行，到此，UIKT已经可以很好地工作了，你可以像这样来套用任意View组件。
 - 甚至可以替代泛型反射实现实例化，且不附带反射的性能开销。
-```
+```kotlin
     val homePage = root(context)
     val detailPage = root(context)
     
@@ -104,7 +104,7 @@ dsl:    view{
 
 然后，必须将具有三个 receiver 的函数类型定义为冗余的 `lambda`，并且所有这些都没有内联功能。无论如何，我们已经有多个 receiver 。
 
-```
+```kotlin
 typealias BoxReceiver<SL> = @LayoutMarker context((@ViewMarker _Box), (@ScopeMarker Scope<BoxLP>)) SL.() -> Unit
 typealias ConstraintReceiver<SL> = @LayoutMarker context((@ViewMarker _Constraint), (@ScopeMarker Scope<ConstraintLP>)) SL.() -> Unit
 typealias RelativeReceiver<SL> = @LayoutMarker context((@ViewMarker _Relative), (@ScopeMarker Scope<RelativeLP>)) SL.() -> Unit
@@ -135,7 +135,7 @@ see [ViewMarker], [LayoutMarker], [ScopeMarker].
 
 构造布局至少需要两个参数（请参阅下面的代码 1）、[context][Context] 和树`block`，至少对于布局根而言。
 
-```
+```kotlin
 Root(context, block)         // 1
 
 PartialRoot(block)(context)  // 2
@@ -144,13 +144,13 @@ PartialRoot(block)(context)  // 2
 我想用上面的`code2`构建它，[Root] 就是这样工作的。
 
 `PartialRoot` function:
-```
+```kotlin
 fun PartialRoot(block): (Context) -> View = { ctx ->
     Root(ctx, block)
 }
 ```
 Widget偏应用函数和原函数
-```
+```kotlin
 /** Partial applied function of `Widget(ctx, ...)`. */
 @SinceKotlin(ContextReceiverGenericSinceKotlin)
 inline fun <V : View, VL : LP> Widget(
@@ -176,7 +176,7 @@ inline fun <V : View, VL : LP> Widget(
 
 ## Constructor memory
 对于自定义视图，构建时需要使用反射获取实例，这里通过`remember`实现记忆，减少反射开销。
-```
+```kotlin
 @PublishedApi
 internal fun <P, V> remember(
 	keySelector: (P) -> Any? = { it },

@@ -45,7 +45,7 @@ However, UIKT will be slightly inferior to X2C, because some function types with
 ## [UIKT](./README.md) vs [Anko-Layouts](https://github.com/Kotlin/anko/wiki/Anko-Layouts)
 
 > `Anko-Layouts` is a Android UI DSL makes the same logic easy to read, easy to write and there is no runtime overhead. Here it is again:
-```
+```kotlin
 linearLayout {
     button("Login") {
         textSize = 26f

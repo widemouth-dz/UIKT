@@ -100,7 +100,7 @@ PartialRoot(block)(context)  // 2
 I want to construct it with `code#2` above, and [Root] works just like it.
 
 `PartialRoot` function:
-```
+```kotlin
 fun PartialRoot(block): (Context) -> View = { ctx ->
     Root(ctx, block)
 }

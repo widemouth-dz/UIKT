@@ -1,7 +1,6 @@
 package wedo.widemouth.compiler.ksp
 
-import com.google.auto.service.AutoService
-import com.google.devtools.ksp.getAllSuperTypes
+import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
@@ -9,81 +8,63 @@ import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
-import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
 import wedo.widemouth.annotation.DslGroup
+import wedo.widemouth.annotation.DslGroupDeferred
+import wedo.widemouth.compiler.allNestedClasses
+import wedo.widemouth.compiler.findClassesInAnnotation
+import wedo.widemouth.compiler.generator.DslGroupGenerator
 import java.io.IOException
 
-//@AutoService(SymbolProcessorProvider::class)
 class DslGroupKspProvider : SymbolProcessorProvider {
-    override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
-        DslGroupKsp(environment.codeGenerator, environment.logger, environment.options)
+	override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
+		DslGroupKsp(environment.codeGenerator, environment.logger, environment.options)
 }
 
 class DslGroupKsp(
-    private val codeGenerator: CodeGenerator,
-    private val logger: KSPLogger,
-    private val options: Map<String, String>,
+	private val codeGenerator: CodeGenerator,
+	private val logger: KSPLogger,
+	private val options: Map<String, String>,
 ) : SymbolProcessor {
 
-    override fun process(resolver: Resolver): List<KSAnnotated> {
-        logger.warn("$this DslGroupKsp process start")
-        val symbols = resolver.getSymbolsWithAnnotation(DslGroup::class.java.canonicalName)
+	override fun process(resolver: Resolver): List<KSAnnotated> {
+		logger.warn("DslGroupKsp process start")
+		val symbols = resolver.getSymbolsWithAnnotation(DslGroup::class.java.name)
+		var groups = symbols.findClassesInAnnotation(DslGroup::class)
 
-        val dslGroups = mutableSetOf<KSType>()
+		val deferredSymbols = resolver.getSymbolsWithAnnotation(DslGroupDeferred::class.java.name)
 
-//        if(symbols.any { !it.validate() }) error("symbols any validate")
+		val deferredGroup = deferredSymbols.map { symbol ->
+			symbol.findClassesInAnnotation(DslGroupDeferred::class)
+		}
 
-        symbols.forEach { symbol ->
-            symbol.annotations.filter { it.shortName.asString() == DslGroup::class.simpleName }
-                .forEach { annotation ->
-                    annotation.arguments.forEach { argument ->
-                        @Suppress("UNCHECKED_CAST")
-                        when (argument.name?.asString()) {
-                            "groupClasses" -> dslGroups.addAll(argument.value as ArrayList<KSType>)
-                        }
-                    }
-                }
-        }
+		if (deferredGroup.any { it.none() }) return (symbols + deferredSymbols).distinct().toList()
 
-        logger.warn("DslGroupKsp dslGroups size = ${dslGroups.size}")
+		groups += deferredGroup.flatten()
 
-//        error("dslGroup size = ${dslGroups.size}")
+		val layoutBaseClass =
+			resolver.getClassDeclarationByName("android.view.ViewGroup.LayoutParams")
+				?.asStarProjectedType()
+				?: error("Can not find class [android.view.ViewGroup.LayoutParams] in your compiled module")
 
-        if (dslGroups.any { it.isError }) return symbols.toList()
+		if (groups.none()) return emptyList()
 
-        val groupSequence =
-            dslGroups.asSequence().map { Pair(it.toClassName(), it.layoutKSType.toClassName()) }
-        GroupPoet.process(groupSequence) {
-            try {
-                it.writeTo(codeGenerator, true)
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-        logger.warn("DslGroupKsp process end")
-        return emptyList()
-    }
+		val groupSequence = groups.map { group ->
+			Pair(group.toClassName(),
+				group.allNestedClasses.first { layoutBaseClass.isAssignableFrom(it.asStarProjectedType()) }
+					.toClassName())
+		}
 
-
-    private val KSType.layoutKSType: KSType
-        get() {
-            val classDeclaration = declaration as KSClassDeclaration
-            return classDeclaration.layoutKSType ?: classDeclaration.getAllSuperTypes()
-                .firstNotNullOf { it.layoutKSType }
-        }
-
-    private val KSClassDeclaration.layoutKSType: KSType?
-        get() = declarations.filterIsInstance<KSClassDeclaration>()
-            .firstOrNull { it.isLayoutType }?.asType(emptyList())
-
-    private val KSClassDeclaration.isLayoutType: Boolean
-        get() = superTypes.any {
-            (it.resolve().declaration as KSClassDeclaration).qualifiedName!!.asString() ==
-                    "android.view.ViewGroup.MarginLayoutParams"
-        }
-
+		DslGroupGenerator.generate(groupSequence) {
+			try {
+				it.writeTo(codeGenerator, true)
+			} catch (e: IOException) {
+				e.printStackTrace()
+			}
+		}
+		logger.warn("DslGroupKsp process end")
+		return emptyList()
+	}
 }
 

@@ -35,7 +35,7 @@ kotlinOptions {
 
 ## Sample
 请参阅 [Sample](./Sample.md) 了解详情.
-```
+```kotlin
 Column {
 
     Row {
