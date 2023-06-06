@@ -19,6 +19,8 @@ UIKT 是关于 Android UI 的`DSL`，它可以使用简单易读的 Kotlin 代�
 
 以下是 Kotlin 升级建议， [Gradle | Kotlin Doc](https://kotlinlang.org/docs/gradle-configure-project.html).
 
+最低版本
+
 | Kotlin  | KGP     | Gradle |  AGP   |
 |:-------:|---------|:------:|:------:|
 | v1.7.20 | v1.7.20 | v6.7.1 | v4.0.1 |
@@ -27,9 +29,16 @@ UIKT 是关于 Android UI 的`DSL`，它可以使用简单易读的 Kotlin 代�
 
 配置以下`kotlinOptions`以启用`context`API。
 
-```
+```groovy
 kotlinOptions {
     freeCompilerArgs = freeCompilerArgs + ["-Xcontext-receivers"]
+}
+```
+配置以下ksp参数以关闭或启用DSL组件原函数和偏应用函数生成。
+```groovy
+ksp {
+    arg("primitive", "false")
+    arg("partial", "true")
 }
 ```
 

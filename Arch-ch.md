@@ -1,5 +1,127 @@
 # UIKT Arch Doc
 
+## KSP
+
+### ViewEffectKsp
+UIKT使用KSP在编译时为注解的View组件生成Ext类，Ext继承了IViewEffect接口，由ViewEffectHelper委托实现ViewEffect属性。
+
+通过注解ViewEffectWidget注册
+```kotlin
+@file:ViewEffectWidget(
+    [
+        ConstraintLayout::class,
+        FrameLayout::class,
+        RelativeLayout::class,
+        LinearLayout::class,
+        CoordinatorLayout::class,
+
+        AppCompatImageView::class,
+        ImageButton::class,
+        ImageView::class
+    ]
+)
+```
+以上注册信息会生成以下代码文件
++ decoration
+  - AppCompatImageViewExt
+  - ConstraintLayoutExt
+  - CoordinatorLayoutExt
+  - FrameLayoutExt
+  - ImageButtonExt
+  - ImageViewExt
+  - LinearLayoutExt
+  - RelativeLayoutExt
+
+### DslKsp
+View组件的DSL构建函数同样由KSP在编译时生成，通过以下注解注册。
+```kotlin
+
+@file:DslWidget(
+    [
+        TextView::class,
+        Button::class,
+        ImageButton::class,
+        ImageView::class,
+    ]
+)
+
+@file:DslGroup(
+    [
+        FrameLayout::class,
+        RelativeLayout::class,
+        LinearLayout::class,
+        CoordinatorLayout::class,
+
+        ScrollView::class,
+        HorizontalScrollView::class,
+        NestedScrollView::class
+    ]
+)
+
+```
+生成的代码文件
++ uikt
+  - Group.kt
+  - GroupReceiver.kt
+  - GroupWithDefaultLP.kt
+  - PartialAppliedGroup.kt
+  - PartialAppliedGroupWithDefaultLP.kt
+  - PartialAppliedWidget.kt
+  - PartialAppliedWidgetWithDefaultLP.kt
+  - ScopeGroup.kt
+  - ScopeWidget.kt
+  - Widget.kt
+  - WidgetWithDefaultLP.kt
+
+对于ViewGroup，需要找出其LayoutParams类，这在源码上无法处理，需要手动添加。 元编程能够做到，以下是KSP实现。
+```kotlin
+
+val layoutBaseClass =
+  resolver.getClassDeclarationByName("android.view.ViewGroup.LayoutParams")
+    ?.asStarProjectedType()
+    ?: error("Can not find class [android.view.ViewGroup.LayoutParams] in your compiled module")
+
+group.allNestedClasses.first { layoutBaseClass.isAssignableFrom(it.asStarProjectedType()) }
+
+val KSClassDeclaration.allNestedClasses: Sequence<KSClassDeclaration>
+    get() = declarations.filterIsInstance<KSClassDeclaration>() +
+            getAllSuperTypes()
+                .map { it.declaration }
+                .filterIsInstance<KSClassDeclaration>()
+                .flatMap { it.declarations }
+                .filterIsInstance<KSClassDeclaration>()
+```
+
+### [Multiple round processing](https://kotlinlang.org/docs/ksp-multi-round.html)
+多轮编译是处理器都需要考虑的情况，apt，kapt，ksp都有相关的API支持，以下是ksp示例。
+```kotlin
+override fun process(resolver: Resolver): List<KSAnnotated> {
+    val symbols = resolver.getSymbolsWithAnnotation("com.example.annotation.Builder")
+    val result = symbols.filter { !it.validate() }
+    symbols
+        .filter { it is KSClassDeclaration && it.validate() }
+        .map { it.accept(BuilderVisitor(), Unit) }
+    return result
+}
+```
+本轮无法编译的符号集合可以return给process函数，延迟到下轮处理。
+
+但是貌似不支持读取Annotation的无效符号（而是直接过滤掉）。考虑以下情况：
+```kotlin
+@file:DslGroupDeferred(
+    [
+        FrameLayoutExt::class,
+        RelativeLayoutExt::class,
+        ConstraintLayoutExt::class,
+        LinearLayoutExt::class,
+        CoordinatorLayoutExt::class,
+    ]
+)
+```
+无法通过validate判断Annotation是否引用了无效符号（即将生成的符号），所以无法判断是否需要延迟到下一轮处理。
+这里使用DslGroupDeferred注解注册延迟处理的组件，如果引用符号的数量为0（被过滤掉），则延迟处理。需要注意的是，
+DslGroupDeferred引用的延迟符号需要是同一批生成的符号，这在增量编译时会存在一些问题。
+
 ## Functionalization
 
 UIKT的基础高度函数化。
@@ -11,7 +133,7 @@ typealias ViewBuilder<V> = (ctx: Context) -> V
 typealias LayoutBuilder<L> = () -> L
 typealias ScopeViewBuilder<V> = ViewBuilder<V>
 
-/** Partial applied function of `Group(ctx, ...)`. */
+        /** Partial applied function of `Group(ctx, ...)`. */
 @SinceKotlin(ContextReceiverGenericSinceKotlin)
 inline fun <G : ViewGroup, GL : LP, GSL : LP> Root(
     crossinline groupBuilder: ViewBuilder<G>,

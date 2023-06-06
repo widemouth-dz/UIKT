@@ -10,7 +10,7 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
-import wedo.widemouth.annotation.ViewEffectGroup
+import wedo.widemouth.annotation.ViewEffectWidget
 import wedo.widemouth.compiler.findClassesInAnnotation
 import wedo.widemouth.compiler.generator.ViewEffectGenerator
 import java.io.IOException
@@ -29,10 +29,10 @@ class ViewEffectKsp(
 
 	override fun process(resolver: Resolver): List<KSAnnotated> {
 		logger.warn("ViewEffectKsp process start")
-		val symbols = resolver.getSymbolsWithAnnotation(ViewEffectGroup::class.java.name)
+		val symbols = resolver.getSymbolsWithAnnotation(ViewEffectWidget::class.java.name)
 
 		val viewEffectWidgets: Sequence<KSClassDeclaration> =
-			symbols.findClassesInAnnotation(ViewEffectGroup::class)
+			symbols.findClassesInAnnotation(ViewEffectWidget::class)
 
 		if (viewEffectWidgets.none()) return emptyList()
 

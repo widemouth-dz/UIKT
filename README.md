@@ -20,6 +20,8 @@ then choose one of them based on compatibility and your preferences.
 
 Here are Kotlin upgrade recommendations, [Gradle | Kotlin Doc](https://kotlinlang.org/docs/gradle-configure-project.html).
 
+At least
+
 | Kotlin  | KGP     | Gradle |  AGP   |
 |:-------:|---------|:------:|:------:|
 | v1.7.20 | v1.7.20 | v6.7.1 | v4.0.1 |
