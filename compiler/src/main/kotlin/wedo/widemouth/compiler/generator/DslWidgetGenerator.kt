@@ -13,7 +13,7 @@ import com.squareup.kotlinpoet.TypeVariableName
  * @author WideMouth
  * @since 2023/6/3
  */
-object DslWidgetGenerator {
+class DslWidgetGenerator(private val generatedCodePackageName: String) {
 
     private val mTasks = mapOf(
         "ScopeWidget" to DslWidgetGenerator::buildScopeWidgetFun,
@@ -25,9 +25,9 @@ object DslWidgetGenerator {
 
     fun generate(dslWidgets: Sequence<ClassName>, fileProcessor: (FileSpec) -> Unit) {
         mTasks.forEach { task ->
-            val fileBuilder = FileSpec.builder(sGeneratedPackage, task.key)
+            val fileBuilder = FileSpec.builder(generatedCodePackageName, task.key)
             dslWidgets.forEach {
-                fileBuilder.addFunction(task.value(it))
+                fileBuilder.addFunction(task.value(this, it))
             }
             fileProcessor(fileBuilder.build())
         }
@@ -130,18 +130,17 @@ object DslWidgetGenerator {
 
 
 
-    private const val sUiktPackageName = "wedo.widemouth.uikt"
-    private const val sGeneratedPackage = sUiktPackageName
+    private  val sUiktPackageName = "wedo.widemouth.uikt"
 
     private val sLPName = ClassName(sUiktPackageName, "LP")
 
-    private const val sWidgetLayoutTypeVariable = "VL"
+    private  val sWidgetLayoutTypeVariable = "VL"
     private val sWidgetLayoutTypeVariableName = TypeVariableName(sWidgetLayoutTypeVariable)
     private val sWidgetLayoutWithBoundTypeVariableName =
         TypeVariableName(sWidgetLayoutTypeVariable, sLPName)
 
     private val sScopeName = ClassName(sUiktPackageName, "Scope")
-    private const val sScopeLayoutTypeVariable = "SL"
+    private  val sScopeLayoutTypeVariable = "SL"
     private val sScopeLayoutTypeVariableName = TypeVariableName(sScopeLayoutTypeVariable)
     private val sScopeLayoutWithBoundTypeVariableName =
         TypeVariableName(sScopeLayoutTypeVariable, sLPName)

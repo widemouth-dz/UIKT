@@ -2,11 +2,6 @@
 
 package wedo.widemouth.uikt
 
-//import wedo.widemouth.uikt.decoration.ConstraintLayoutExt
-//import wedo.widemouth.uikt.decoration.CoordinatorLayoutExt
-//import wedo.widemouth.uikt.decoration.FrameLayoutExt
-//import wedo.widemouth.uikt.decoration.LinearLayoutExt
-//import wedo.widemouth.uikt.decoration.RelativeLayoutExt
 import android.content.Context
 import android.view.ViewGroup
 import android.widget.FrameLayout

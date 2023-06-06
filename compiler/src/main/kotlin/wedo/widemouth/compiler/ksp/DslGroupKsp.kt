@@ -15,6 +15,7 @@ import wedo.widemouth.annotation.DslGroupDeferred
 import wedo.widemouth.compiler.allNestedClasses
 import wedo.widemouth.compiler.findClassesInAnnotation
 import wedo.widemouth.compiler.generator.DslGroupGenerator
+import wedo.widemouth.compiler.packageName
 import java.io.IOException
 
 class DslGroupKspProvider : SymbolProcessorProvider {
@@ -30,6 +31,7 @@ class DslGroupKsp(
 
 	override fun process(resolver: Resolver): List<KSAnnotated> {
 		logger.warn("DslGroupKsp process start")
+
 		val symbols = resolver.getSymbolsWithAnnotation(DslGroup::class.java.name)
 		var groups = symbols.findClassesInAnnotation(DslGroup::class)
 
@@ -41,14 +43,21 @@ class DslGroupKsp(
 
 		if (deferredGroup.any { it.none() }) return (symbols + deferredSymbols).distinct().toList()
 
+		val allSymbols = symbols + deferredSymbols
+
+		if (allSymbols.none()) return emptyList()
+
+		val generatedCodePackageName = allSymbols.firstNotNullOfOrNull { it.packageName }
+			?: error("Can not find packageName from symbols with [DslGroup] or [DslGroupDeferred.")
+
 		groups += deferredGroup.flatten()
+
+		if (groups.none()) return emptyList()
 
 		val layoutBaseClass =
 			resolver.getClassDeclarationByName("android.view.ViewGroup.LayoutParams")
 				?.asStarProjectedType()
 				?: error("Can not find class [android.view.ViewGroup.LayoutParams] in your compiled module")
-
-		if (groups.none()) return emptyList()
 
 		val groupSequence = groups.map { group ->
 			Pair(group.toClassName(),
@@ -56,7 +65,7 @@ class DslGroupKsp(
 					.toClassName())
 		}
 
-		DslGroupGenerator.generate(groupSequence) {
+		DslGroupGenerator(generatedCodePackageName).generate(groupSequence) {
 			try {
 				it.writeTo(codeGenerator, true)
 			} catch (e: IOException) {

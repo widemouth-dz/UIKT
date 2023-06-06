@@ -2,7 +2,6 @@ package wedo.widemouth.compiler.generator
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
@@ -14,15 +13,10 @@ import com.squareup.kotlinpoet.asTypeName
  * @since 2023/6/3
  */
 object ViewEffectGenerator {
-	fun generate(widgets: Sequence<ClassName>, fileProcessor: (FileSpec) -> Unit) {
-		widgets.forEach { fileProcessor(buildViewEffectWidget(it)) }
-	}
 
-	private fun buildViewEffectWidget(widgetName: ClassName): FileSpec {
+	fun generate(widgetName: ClassName): TypeSpec {
 
 		val nameExt = widgetName.simpleName + sViewEffectSuffix
-
-		val widgetExtName = ClassName(sViewEffectPackageName, nameExt)
 
 		val contextParameter = ParameterSpec("context", sContextName)
 		val attrsParameter = ParameterSpec.builder("attrs", sAttributeSetName.copy(nullable = true))
@@ -78,7 +72,7 @@ object ViewEffectGenerator {
 			.addStatement("drawDividers(%L)", canvasParameter.name)
 			.build()
 
-		val widgetExtType = TypeSpec.classBuilder(widgetExtName)
+		return TypeSpec.classBuilder(nameExt)
 			.addModifiers(KModifier.OPEN)
 			.primaryConstructor(primaryConstructor)
 			.superclass(widgetName)
@@ -94,7 +88,7 @@ object ViewEffectGenerator {
 			.addFunction(dispatchDrawFun)
 			.build()
 
-		return FileSpec.builder(sViewEffectPackageName, nameExt).addType(widgetExtType).build()
+
 	}
 
 	private const val sViewEffectSuffix = "Ext"

@@ -8,11 +8,13 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
 import wedo.widemouth.annotation.ViewEffectWidget
 import wedo.widemouth.compiler.findClassesInAnnotation
 import wedo.widemouth.compiler.generator.ViewEffectGenerator
+import wedo.widemouth.compiler.packageName
 import java.io.IOException
 
 class ViewEffectKspProvider : SymbolProcessorProvider {
@@ -31,14 +33,21 @@ class ViewEffectKsp(
 		logger.warn("ViewEffectKsp process start")
 		val symbols = resolver.getSymbolsWithAnnotation(ViewEffectWidget::class.java.name)
 
+		if (symbols.none()) return emptyList()
+
+		val generatedCodePackageName = symbols.firstNotNullOfOrNull { it.packageName }
+			?: error("Can not find packageName from symbols with [ViewEffectWidget].")
+
 		val viewEffectWidgets: Sequence<KSClassDeclaration> =
 			symbols.findClassesInAnnotation(ViewEffectWidget::class)
 
 		if (viewEffectWidgets.none()) return emptyList()
 
-		ViewEffectGenerator.generate(viewEffectWidgets.map { it.toClassName() }) {
+		viewEffectWidgets.map { it.toClassName() }.forEach {
 			try {
-				it.writeTo(codeGenerator, false)
+				val type = ViewEffectGenerator.generate(it)
+				FileSpec.builder(generatedCodePackageName, type.name!!).addType(type).build()
+					.writeTo(codeGenerator, false)
 			} catch (e: IOException) {
 				e.printStackTrace()
 			}
