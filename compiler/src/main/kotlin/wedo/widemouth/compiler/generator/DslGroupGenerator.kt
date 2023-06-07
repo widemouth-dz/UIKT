@@ -1,7 +1,7 @@
 package wedo.widemouth.compiler.generator
 
 import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.MemberName
@@ -13,51 +13,27 @@ import com.squareup.kotlinpoet.TypeVariableName
  * @author WideMouth
  * @since 2023/6/3
  */
-class DslGroupGenerator(private val generatedCodePackageName: String) {
+object DslGroupGenerator {
 
-	private val mTasks =
-		mapOf(
-			"ScopeGroup" to DslGroupGenerator::buildScopeGroupFun,
-			"Group" to DslGroupGenerator::buildGroupFun,
-			"GroupWithDefaultLP" to DslGroupGenerator::buildGroupWithDefaultLPFun,
-			"PartialAppliedGroup" to DslGroupGenerator::buildGroupPartialFun,
-			"PartialAppliedGroupWithDefaultLP" to DslGroupGenerator::buildPartialGroupWithDefaultLPFun
+	fun generateGroupReceiver(groupName: ClassName, layoutParamsName: ClassName): CodeBlock =
+		CodeBlock.of(
+			"typealias %L$sReceiverSuffix<SL> = context((@%T·%T),·(@%T·%T<%T>)) (@%T·SL).()·->·Unit\n\n",
+			groupName.simpleName,
+			sViewMarkerName,
+			groupName,
+			sScopeMarkerName,
+			sScopeName,
+			layoutParamsName,
+			sLayoutMarkerName,
 		)
 
-	fun generate(
-		groups: Sequence<Pair<ClassName, ClassName>>, fileProcessor: (FileSpec) -> Unit,
-	) {
-
-		fileProcessor(buildGroupReceiverFile(groups))
-
-		mTasks.forEach { task ->
-			val fileBuilder = FileSpec.builder(generatedCodePackageName, task.key)
-			groups.forEach { fileBuilder.addFunction(task.value(this, it.first, it.second)) }
-
-			fileProcessor(fileBuilder.build())
-		}
-	}
-
-	private fun buildGroupReceiverFile(groups: Sequence<Pair<ClassName, ClassName>>): FileSpec {
-		val groupReceiverFileBuilder = FileSpec.scriptBuilder("GroupReceiver", generatedCodePackageName)
-		groups.forEach {
-			groupReceiverFileBuilder.addStatement(
-				"typealias %LReceiver<SL> = context((@%T·%T),·(@%T·%T<%T>)) (@%T·SL).()·->·Unit",
-				it.first.simpleName,
-				sViewMarkerName,
-				it.first,
-				sScopeMarkerName,
-				sScopeName,
-				it.second,
-				sLayoutMarkerName,
-			).addCode("\n")
-		}
-		return groupReceiverFileBuilder.build()
-	}
-
-	private fun buildScopeGroupFun(groupName: ClassName, layoutParamsName: ClassName): FunSpec {
+	fun generateScopeGroup(
+		groupName: ClassName,
+		layoutParamsName: ClassName,
+		receiverName: ClassName.() -> ClassName,
+	): FunSpec {
 		val sGroupBlockParameter = ParameterSpec.builder(
-			"block", groupName.receiverName.parameterizedBy(sScopeLayoutTypeVariableName)
+			"block", groupName.receiverName().parameterizedBy(sScopeLayoutTypeVariableName)
 		).build()
 
 		return FunSpec.builder(groupName.simpleName)
@@ -74,9 +50,13 @@ class DslGroupGenerator(private val generatedCodePackageName: String) {
 			).build()
 	}
 
-	private fun buildGroupFun(groupName: ClassName, layoutParamsName: ClassName): FunSpec {
+	fun generateGroup(
+		groupName: ClassName,
+		layoutParamsName: ClassName,
+		receiverName: ClassName.() -> ClassName,
+	): FunSpec {
 		val sGroupBlockParameter = ParameterSpec.builder(
-			"block", groupName.receiverName.parameterizedBy(sGroupLayoutTypeVariableName)
+			"block", groupName.receiverName().parameterizedBy(sGroupLayoutTypeVariableName)
 		).addModifiers(KModifier.NOINLINE).build()
 
 		return FunSpec.builder(groupName.simpleName)
@@ -97,12 +77,13 @@ class DslGroupGenerator(private val generatedCodePackageName: String) {
 			).build()
 	}
 
-	private fun buildGroupWithDefaultLPFun(
+	fun generateGroupWithDefaultLP(
 		groupName: ClassName,
 		layoutParamsName: ClassName,
+		receiverName: ClassName.() -> ClassName,
 	): FunSpec {
 		val sGroupBlockParameter = ParameterSpec.builder(
-			"block", groupName.receiverName.parameterizedBy(sMarginLPName)
+			"block", groupName.receiverName().parameterizedBy(sMarginLPName)
 		).build()
 
 		return FunSpec.builder(groupName.simpleName)
@@ -120,9 +101,13 @@ class DslGroupGenerator(private val generatedCodePackageName: String) {
 			).build()
 	}
 
-	private fun buildGroupPartialFun(groupName: ClassName, layoutParamsName: ClassName): FunSpec {
+	fun generatePartialAppliedGroup(
+		groupName: ClassName,
+		layoutParamsName: ClassName,
+		receiverName: ClassName.() -> ClassName,
+	): FunSpec {
 		val groupBlockParameter = ParameterSpec.builder(
-			"block", groupName.receiverName.parameterizedBy(sGroupLayoutTypeVariableName)
+			"block", groupName.receiverName().parameterizedBy(sGroupLayoutTypeVariableName)
 		).addModifiers(KModifier.NOINLINE).build()
 
 		val groupLayoutBuilderParameter =
@@ -144,12 +129,13 @@ class DslGroupGenerator(private val generatedCodePackageName: String) {
 			).build()
 	}
 
-	private fun buildPartialGroupWithDefaultLPFun(
+	fun generatePartialAppliedGroupWithDefaultLP(
 		groupName: ClassName,
 		layoutParamsName: ClassName,
+		receiverName: ClassName.() -> ClassName,
 	): FunSpec {
 		val groupBlockParameter = ParameterSpec.builder(
-			"block", groupName.receiverName.parameterizedBy(sMarginLPName)
+			"block", groupName.receiverName().parameterizedBy(sMarginLPName)
 		).build()
 
 		return FunSpec.builder(groupName.simpleName)
@@ -166,14 +152,13 @@ class DslGroupGenerator(private val generatedCodePackageName: String) {
 			).build()
 	}
 
-	private val ClassName.receiverName
-		get() = ClassName(generatedCodePackageName, "${simpleName}Receiver")
+	const val sReceiverSuffix = "Receiver"
 
-	private val sUiktPackageName = "wedo.widemouth.uikt"
+	private const val sUiktPackageName = "wedo.widemouth.uikt"
 
 	private val sLPName = ClassName(sUiktPackageName, "LP")
 
-	private val sGroupLayoutTypeVariable = "GL"
+	private const val sGroupLayoutTypeVariable = "GL"
 	private val sGroupLayoutTypeVariableName = TypeVariableName(sGroupLayoutTypeVariable)
 	private val sGroupLayoutWithBoundTypeVariableName =
 		TypeVariableName(sGroupLayoutTypeVariable, sLPName)
@@ -201,7 +186,7 @@ class DslGroupGenerator(private val generatedCodePackageName: String) {
 	private val sMarginLPName = ClassName(sUiktPackageName, "MarginLP")
 
 	private val sScopeName = ClassName(sUiktPackageName, "Scope")
-	private val sScopeLayoutTypeVariable = "SL"
+	private const val sScopeLayoutTypeVariable = "SL"
 	private val sScopeLayoutTypeVariableName = TypeVariableName(sScopeLayoutTypeVariable)
 	private val sScopeLayoutWithBoundTypeVariableName =
 		TypeVariableName(sScopeLayoutTypeVariable, sLPName)

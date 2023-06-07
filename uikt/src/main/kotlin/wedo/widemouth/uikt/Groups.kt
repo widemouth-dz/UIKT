@@ -13,11 +13,11 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.widget.NestedScrollView
 import wedo.widemouth.annotation.DslGroup
 import wedo.widemouth.annotation.DslGroupDeferred
-import wedo.widemouth.uikt.decoration.ConstraintLayoutExt
-import wedo.widemouth.uikt.decoration.CoordinatorLayoutExt
-import wedo.widemouth.uikt.decoration.FrameLayoutExt
-import wedo.widemouth.uikt.decoration.LinearLayoutExt
-import wedo.widemouth.uikt.decoration.RelativeLayoutExt
+import wedo.widemouth.uikt.vieweffect.ConstraintLayoutExt
+import wedo.widemouth.uikt.vieweffect.CoordinatorLayoutExt
+import wedo.widemouth.uikt.vieweffect.FrameLayoutExt
+import wedo.widemouth.uikt.vieweffect.LinearLayoutExt
+import wedo.widemouth.uikt.vieweffect.RelativeLayoutExt
 import wedo.widemouth.uikt.property.WRAP_CONTENT
 
 /**
@@ -89,7 +89,7 @@ inline fun <G : ViewGroup, GL : LP, GSL : LP> Root(
 		RelativeLayoutExt::class,
 		ConstraintLayoutExt::class,
 		LinearLayoutExt::class,
-		CoordinatorLayoutExt::class,
+//		CoordinatorLayoutExt::class,
 	]
 )
 @DslGroup(

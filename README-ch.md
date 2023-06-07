@@ -5,7 +5,7 @@
 UIKT 是关于 Android UI 的`DSL`，它可以使用简单易读的 Kotlin 代码创建 UI。
 
 这里有一个简短的介绍，[UIKT-vs-others](UIKT-vs-others-ch.md)，如果你对`Android UI DSL`还不太了解，那么根据兼容性和你的喜好选择其中一个。
-
+关于UIKT的实现基础介绍，参见 [Arch-ch](Arch-ch) 。
 ## Requirement
 
 ### Kotlin
@@ -27,7 +27,12 @@ UIKT 是关于 Android UI 的`DSL`，它可以使用简单易读的 Kotlin 代�
 
 ## Configuration
 
-配置以下`kotlinOptions`以启用`context`API。
+添加依赖
+```kotlin
+implementation("com.github.widemouth-dz:uikt:main-SNAPSHOT")
+ksp("com.github.widemouth-dz.uikt:compiler:main-SNAPSHOT")
+```
+配置`kotlinOptions`以启用`context`API。
 
 ```groovy
 kotlinOptions {

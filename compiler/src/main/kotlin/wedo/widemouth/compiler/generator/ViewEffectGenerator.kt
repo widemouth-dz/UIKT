@@ -14,7 +14,7 @@ import com.squareup.kotlinpoet.asTypeName
  */
 object ViewEffectGenerator {
 
-	fun generate(widgetName: ClassName): TypeSpec {
+	fun generateViewEffectExt(widgetName: ClassName): TypeSpec {
 
 		val nameExt = widgetName.simpleName + sViewEffectSuffix
 
@@ -92,7 +92,7 @@ object ViewEffectGenerator {
 	}
 
 	private const val sViewEffectSuffix = "Ext"
-	private const val sViewEffectPackageName = "wedo.widemouth.uikt.decoration"
+	private const val sViewEffectPackageName = "wedo.widemouth.uikt.vieweffect"
 	private val sIViewEffectName = ClassName(sViewEffectPackageName, "IViewEffect")
 	private val sViewEffectHelperName = ClassName(sViewEffectPackageName, "ViewEffectHelper")
 

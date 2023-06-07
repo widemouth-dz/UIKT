@@ -1,4 +1,4 @@
-package wedo.widemouth.uikt.decoration
+package wedo.widemouth.uikt.vieweffect
 
 import android.content.Context
 import android.graphics.*
@@ -9,11 +9,11 @@ import android.view.ViewOutlineProvider
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.RequiresApi
 import wedo.widemouth.uikt.R
-import wedo.widemouth.uikt.decoration.IViewEffect.Companion.HIDE_RADIUS_SIDE_BOTTOM
-import wedo.widemouth.uikt.decoration.IViewEffect.Companion.HIDE_RADIUS_SIDE_LEFT
-import wedo.widemouth.uikt.decoration.IViewEffect.Companion.HIDE_RADIUS_SIDE_NONE
-import wedo.widemouth.uikt.decoration.IViewEffect.Companion.HIDE_RADIUS_SIDE_RIGHT
-import wedo.widemouth.uikt.decoration.IViewEffect.Companion.HIDE_RADIUS_SIDE_TOP
+import wedo.widemouth.uikt.vieweffect.IViewEffect.Companion.HIDE_RADIUS_SIDE_BOTTOM
+import wedo.widemouth.uikt.vieweffect.IViewEffect.Companion.HIDE_RADIUS_SIDE_LEFT
+import wedo.widemouth.uikt.vieweffect.IViewEffect.Companion.HIDE_RADIUS_SIDE_NONE
+import wedo.widemouth.uikt.vieweffect.IViewEffect.Companion.HIDE_RADIUS_SIDE_RIGHT
+import wedo.widemouth.uikt.vieweffect.IViewEffect.Companion.HIDE_RADIUS_SIDE_TOP
 import wedo.widemouth.uikt.delegate.ObservableTProperty
 import java.lang.StrictMath.floor
 import java.lang.ref.WeakReference

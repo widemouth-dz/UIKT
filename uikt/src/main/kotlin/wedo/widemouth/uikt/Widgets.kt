@@ -10,14 +10,20 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import wedo.widemouth.annotation.DslGroup
+import wedo.widemouth.annotation.DslGroupDeferred
 import wedo.widemouth.annotation.DslWidget
 import wedo.widemouth.annotation.DslWidgetDeferred
-import wedo.widemouth.uikt.decoration.FrameLayoutExt
-import wedo.widemouth.uikt.decoration.ImageViewExt
+import wedo.widemouth.uikt.vieweffect.FrameLayoutExt
 import wedo.widemouth.uikt.property.WRAP_CONTENT
+import wedo.widemouth.uikt.vieweffect.ConstraintLayoutExt
+import wedo.widemouth.uikt.vieweffect.CoordinatorLayoutExt
+import wedo.widemouth.uikt.vieweffect.LinearLayoutExt
+import wedo.widemouth.uikt.vieweffect.RelativeLayoutExt
 
 /**
  * DslWidget partial applied functions, for example:
@@ -57,10 +63,13 @@ inline fun <V : View> Widget(
 	noinline block: WidgetReceiver<V, MarginLP>,
 ): V = Widget(ctx, viewBuilder, ::marginLayout, block)
 
-@DslWidgetDeferred(
+@DslGroupDeferred(
 	[
-		ImageViewExt::class,
-		FrameLayoutExt::class
+		FrameLayoutExt::class,
+		RelativeLayoutExt::class,
+		ConstraintLayoutExt::class,
+		LinearLayoutExt::class,
+		CoordinatorLayoutExt::class,
 	]
 )
 @DslWidget(

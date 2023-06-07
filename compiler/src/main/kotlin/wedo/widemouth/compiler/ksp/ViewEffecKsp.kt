@@ -1,7 +1,5 @@
 package wedo.widemouth.compiler.ksp
 
-import com.google.devtools.ksp.processing.CodeGenerator
-import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
@@ -19,18 +17,13 @@ import java.io.IOException
 
 class ViewEffectKspProvider : SymbolProcessorProvider {
 	override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-		return ViewEffectKsp(environment.codeGenerator, environment.logger, environment.options)
+		return ViewEffectKsp(environment)
 	}
 }
 
-class ViewEffectKsp(
-	private val codeGenerator: CodeGenerator,
-	private val logger: KSPLogger,
-	private val options: Map<String, String>,
-) : SymbolProcessor {
+class ViewEffectKsp(private val environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
 	override fun process(resolver: Resolver): List<KSAnnotated> {
-		logger.warn("ViewEffectKsp process start")
 		val symbols = resolver.getSymbolsWithAnnotation(ViewEffectWidget::class.java.name)
 
 		if (symbols.none()) return emptyList()
@@ -44,16 +37,14 @@ class ViewEffectKsp(
 		if (viewEffectWidgets.none()) return emptyList()
 
 		viewEffectWidgets.map { it.toClassName() }.forEach {
+			val type = ViewEffectGenerator.generateViewEffectExt(it)
+			val file = FileSpec.builder(generatedCodePackageName, type.name!!).addType(type).build()
 			try {
-				val type = ViewEffectGenerator.generate(it)
-				FileSpec.builder(generatedCodePackageName, type.name!!).addType(type).build()
-					.writeTo(codeGenerator, false)
+				file.writeTo(environment.codeGenerator, false)
 			} catch (e: IOException) {
 				e.printStackTrace()
 			}
 		}
-
-		logger.warn("ViewEffectKsp process end")
 		return emptyList()
 	}
 }

@@ -1,4 +1,4 @@
-package wedo.widemouth.uikt.decoration
+package wedo.widemouth.uikt.vieweffect
 
 import android.graphics.Canvas
 import android.view.View
@@ -35,8 +35,8 @@ import wedo.widemouth.annotation.ViewEffectWidget
 		CoordinatorLayout::class,
 
 		AppCompatImageView::class,
-		ImageButton::class,
-		ImageView::class
+//		ImageButton::class,
+//		ImageView::class
 	]
 )
 interface IViewEffect {
