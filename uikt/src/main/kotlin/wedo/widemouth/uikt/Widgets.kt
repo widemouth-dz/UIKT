@@ -5,21 +5,19 @@ package wedo.widemouth.uikt
 import android.content.Context
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.FrameLayout
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import android.widget.ScrollView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import wedo.widemouth.annotation.DslGroup
-import wedo.widemouth.annotation.DslGroupDeferred
+import androidx.viewpager2.widget.ViewPager2
 import wedo.widemouth.annotation.DslWidget
-import wedo.widemouth.annotation.DslWidgetDeferred
 import wedo.widemouth.uikt.vieweffect.FrameLayoutExt
 import wedo.widemouth.uikt.property.WRAP_CONTENT
+import wedo.widemouth.uikt.vieweffect.AppCompatImageViewExt
 import wedo.widemouth.uikt.vieweffect.ConstraintLayoutExt
 import wedo.widemouth.uikt.vieweffect.CoordinatorLayoutExt
 import wedo.widemouth.uikt.vieweffect.LinearLayoutExt
@@ -63,29 +61,24 @@ inline fun <V : View> Widget(
 	noinline block: WidgetReceiver<V, MarginLP>,
 ): V = Widget(ctx, viewBuilder, ::marginLayout, block)
 
-@DslGroupDeferred(
-	[
-		FrameLayoutExt::class,
-		RelativeLayoutExt::class,
-		ConstraintLayoutExt::class,
-		LinearLayoutExt::class,
-		CoordinatorLayoutExt::class,
-	]
-)
-@DslWidget(
-	[
-		ConstraintLayout::class,
-		FrameLayout::class,
-		RelativeLayout::class,
-		LinearLayout::class,
-		CoordinatorLayout::class,
+@DslWidget(ImageView::class)
+@DslWidget(Button::class)
+@DslWidget(TextView::class)
+@DslWidget(EditText::class)
+@DslWidget(ViewPager2::class)
+@DslWidget(AppCompatImageViewExt::class)
 
-		TextView::class,
-		Button::class,
-		ImageButton::class,
-		ImageView::class
-	]
-)
+@DslWidget(LinearLayout::class)
+@DslWidget(FrameLayout::class)
+@DslWidget(RelativeLayout::class)
+@DslWidget(ConstraintLayout::class)
+@DslWidget(CoordinatorLayout::class)
+
+@DslWidget(LinearLayoutExt::class)
+@DslWidget(FrameLayoutExt::class)
+@DslWidget(RelativeLayoutExt::class)
+@DslWidget(ConstraintLayoutExt::class)
+@DslWidget(CoordinatorLayoutExt::class)
 @SinceKotlin(ContextReceiverGenericSinceKotlin)
 inline fun <V : View, VL : LP> Widget(
 	ctx: Context,

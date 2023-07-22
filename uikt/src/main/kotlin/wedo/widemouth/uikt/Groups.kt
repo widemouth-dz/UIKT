@@ -9,10 +9,10 @@ import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.ScrollView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.widget.NestedScrollView
 import wedo.widemouth.annotation.DslGroup
-import wedo.widemouth.annotation.DslGroupDeferred
 import wedo.widemouth.uikt.vieweffect.ConstraintLayoutExt
 import wedo.widemouth.uikt.vieweffect.CoordinatorLayoutExt
 import wedo.widemouth.uikt.vieweffect.FrameLayoutExt
@@ -83,27 +83,21 @@ inline fun <G : ViewGroup, GL : LP, GSL : LP> Root(
 	noinline block: @LayoutMarker context((@ViewMarker G), (@ScopeMarker Scope<GSL>)) GL.() -> Unit,
 ): G = Group(ctx, groupBuilder, scopeLayoutBuilder, groupLayoutBuilder, block)
 
-@DslGroupDeferred(
-	[
-		FrameLayoutExt::class,
-		RelativeLayoutExt::class,
-		ConstraintLayoutExt::class,
-		LinearLayoutExt::class,
-//		CoordinatorLayoutExt::class,
-	]
-)
-@DslGroup(
-	[
-		FrameLayout::class,
-		RelativeLayout::class,
-		LinearLayout::class,
-		CoordinatorLayout::class,
+@DslGroup(ScrollView::class)
+@DslGroup(NestedScrollView::class)
+@DslGroup(HorizontalScrollView::class)
 
-		ScrollView::class,
-		HorizontalScrollView::class,
-		NestedScrollView::class
-	]
-)
+@DslGroup(LinearLayout::class)
+@DslGroup(FrameLayout::class)
+@DslGroup(RelativeLayout::class)
+@DslGroup(ConstraintLayout::class)
+@DslGroup(CoordinatorLayout::class)
+
+@DslGroup(LinearLayoutExt::class)
+@DslGroup(FrameLayoutExt::class)
+@DslGroup(RelativeLayoutExt::class)
+@DslGroup(ConstraintLayoutExt::class)
+@DslGroup(CoordinatorLayoutExt::class)
 @PublishedApi
 @SinceKotlin(ContextReceiverGenericSinceKotlin)
 internal inline fun <G : ViewGroup, GL : LP, GSL : LP> Group(

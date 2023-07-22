@@ -10,7 +10,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
 import wedo.widemouth.annotation.ViewEffectWidget
-import wedo.widemouth.compiler.findClassesInAnnotation
+import wedo.widemouth.compiler.findClassesInAnnotationIsType
 import wedo.widemouth.compiler.generator.ViewEffectGenerator
 import wedo.widemouth.compiler.packageName
 import java.io.IOException
@@ -32,7 +32,7 @@ class ViewEffectKsp(private val environment: SymbolProcessorEnvironment) : Symbo
 			?: error("Can not find packageName from symbols with [ViewEffectWidget].")
 
 		val viewEffectWidgets: Sequence<KSClassDeclaration> =
-			symbols.findClassesInAnnotation(ViewEffectWidget::class)
+			symbols.flatMap { it.findClassesInAnnotationIsType<ViewEffectWidget>() }
 
 		if (viewEffectWidgets.none()) return emptyList()
 

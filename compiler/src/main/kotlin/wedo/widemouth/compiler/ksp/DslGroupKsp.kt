@@ -1,5 +1,7 @@
 package wedo.widemouth.compiler.ksp
 
+import com.google.devtools.ksp.KspExperimental
+import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
@@ -11,9 +13,9 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
 import wedo.widemouth.annotation.DslGroup
-import wedo.widemouth.annotation.DslGroupDeferred
 import wedo.widemouth.compiler.allNestedClasses
-import wedo.widemouth.compiler.findClassesInAnnotation
+import wedo.widemouth.compiler.annotationsIsType
+import wedo.widemouth.compiler.findClassesInArguments
 import wedo.widemouth.compiler.generator.DslGroupGenerator
 import wedo.widemouth.compiler.generator.DslGroupGenerator.sReceiverSuffix
 import wedo.widemouth.compiler.packageName
@@ -38,28 +40,26 @@ class DslGroupKsp(private val environment: SymbolProcessorEnvironment) : SymbolP
 	override fun process(resolver: Resolver): List<KSAnnotated> {
 
 		val symbols = resolver.getSymbolsWithAnnotation(DslGroup::class.java.name)
-		var groups = symbols.findClassesInAnnotation(DslGroup::class)
 
-		val deferredSymbols = resolver.getSymbolsWithAnnotation(DslGroupDeferred::class.java.name)
+		if (symbols.none()) return emptyList()
 
-		val deferredGroup = deferredSymbols.map { symbol ->
-			symbol.findClassesInAnnotation(DslGroupDeferred::class)
-		}
+		var deferred = false
 
-		if (deferredGroup.any { it.none() }) return (symbols + deferredSymbols).distinct().toList()
+		val groups = symbols.flatMap { symbol ->
+			symbol.annotationsIsType<DslGroup>().flatMap { annotation ->
+				annotation.findClassesInArguments().also { if (it.none()) deferred = true }
+			}
+		}.distinct()
 
-		val allSymbols = symbols + deferredSymbols
+		// terminate groups.
+		val groupCount = groups.count()
 
-		if (allSymbols.none()) return emptyList()
+		if (deferred) return symbols.toList()
 
-		val generatedCodePackageName = allSymbols.firstNotNullOfOrNull { it.packageName }
-			?: error("Can not find packageName from symbols with [DslGroup] or [DslGroupDeferred.")
+		if (groupCount == 0) return emptyList()
 
-		groups += deferredGroup.flatten()
-
-		if (groups.none()) return emptyList()
-
-		groups = groups.distinct()
+		val generatedCodePackageName = symbols.firstNotNullOfOrNull { it.packageName }
+			?: error("Can not find packageName from symbols with [DslGroup].")
 
 		val layoutBaseClass =
 			resolver.getClassDeclarationByName("android.view.ViewGroup.LayoutParams")

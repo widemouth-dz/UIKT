@@ -61,8 +61,3 @@ Column {
     }
 }
 ```
-## Others about `UIKT`
-
-- [Arch Doc](./Arch.md): Implementation details.
-- [Sample Doc](./Sample.md): Detail use cases.
-- [UIKT-vs-others](./UIKT-vs-others-ch.md): Compare UIKT to other related projects.

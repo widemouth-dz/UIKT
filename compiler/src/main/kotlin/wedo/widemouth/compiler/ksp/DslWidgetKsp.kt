@@ -9,8 +9,8 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
 import wedo.widemouth.annotation.DslWidget
-import wedo.widemouth.annotation.DslWidgetDeferred
-import wedo.widemouth.compiler.findClassesInAnnotation
+import wedo.widemouth.compiler.annotationsIsType
+import wedo.widemouth.compiler.findClassesInArguments
 import wedo.widemouth.compiler.generator.DslWidgetGenerator
 import wedo.widemouth.compiler.packageName
 import java.io.IOException
@@ -32,29 +32,27 @@ class DslWidgetKsp(private val environment: SymbolProcessorEnvironment) : Symbol
 
 	override fun process(resolver: Resolver): List<KSAnnotated> {
 		val symbols = resolver.getSymbolsWithAnnotation(DslWidget::class.java.name)
-		var widgets = symbols.findClassesInAnnotation(DslWidget::class)
 
-		val deferredSymbols = resolver.getSymbolsWithAnnotation(DslWidgetDeferred::class.java.name)
+		if (symbols.none()) return emptyList()
 
-		val deferredWidget = deferredSymbols.map {
-			it.findClassesInAnnotation(DslWidgetDeferred::class)
-		}
+		var deferred = false
+		val widgets = symbols
+			.flatMap { symbol ->
+				symbol.annotationsIsType<DslWidget>().flatMap { annotation ->
+					annotation.findClassesInArguments().also { if (it.none()) deferred = true }
+				}
+			}
+			.distinct()
 
-		if (deferredWidget.any { it.none() })
-			return (symbols + deferredSymbols).distinct().toList()
+		// terminate widgets.
+		widgets.count()
 
-		val allSymbols = symbols + deferredSymbols
+        if (deferred) return symbols.toList()
 
-		if (allSymbols.none()) return emptyList()
+        if (widgets.none()) return emptyList()
 
-		val generatedCodePackageName = allSymbols.firstNotNullOfOrNull { it.packageName }
+		val generatedCodePackageName = symbols.firstNotNullOfOrNull { it.packageName }
 			?: error("Can not find packageName from symbols with [DslGroup] or [DslGroupDeferred.")
-
-		widgets += deferredWidget.flatten()
-
-		if (widgets.none()) return emptyList()
-
-		widgets = widgets.distinct()
 
 		mTasks.forEach { task ->
 			val fileBuilder = FileSpec.builder(generatedCodePackageName, task.key)
